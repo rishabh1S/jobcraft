@@ -5,5 +5,8 @@
       "Read(./.env.local)",
       "Read(./secrets/**)"
     ]
+  },
+  "bash": {
+    "deny": ["*/.env*", "grep * .env*", "cat .env*"]
   }
 }

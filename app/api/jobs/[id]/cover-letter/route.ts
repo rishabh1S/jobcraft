@@ -78,14 +78,29 @@ export async function generateCoverLetter({
       },
       {
         role: "user",
-        content: `Write a cover letter for this application. Format it like a proper letter: greeting, 3 short paragraphs, then a sign-off. Target 200-250 words total — tight and focused, not padded.
+        content: `Write a cover letter for this application formatted exactly like a formal email/letter. Target 200-250 words for the body — tight and focused, not padded.
+
+Use this exact structure:
+[Today's date]
+
+Hiring Team
+[Company name]
+
+Dear Hiring Manager,
+
+[Paragraph 1 — why this role at this company resonates. Be real, not salesy.]
+
+[Paragraph 2 — 1-2 concrete things from the resume that are directly relevant. Name actual projects or skills, don't just list traits.]
+
+[Paragraph 3 — brief, human closing. Express genuine interest, invite a conversation.]
+
+Best,
+[Candidate's name]
 
 Style rules:
-- Open with something specific and genuine, not a generic opener
-- Paragraph 1: why this role at this company resonates (be real, not salesy)
-- Paragraph 2: 1-2 concrete things from the resume that are directly relevant — name actual projects or skills, don't just list traits
-- Paragraph 3: brief, human closing — express genuine interest, invite a conversation
-- Sign off naturally: "Best," or "Thanks," then the candidate's name on the next line
+- The opening paragraph should start with something specific and genuine, not a generic opener
+- No corporate buzzwords, no "I am excited to apply" type phrases
+- Sound like a real person, not a template
 
 Candidate name: ${userName}
 Target company: ${companyName}
@@ -99,7 +114,7 @@ ${jobDescription}`,
       },
     ],
     temperature: 0.7,
-    max_tokens: 600,
+    max_tokens: 700,
   });
 
   const text = completion.choices[0]?.message?.content?.trim();
