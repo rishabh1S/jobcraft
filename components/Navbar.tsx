@@ -1,18 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { Job } from "@/lib/types";
 import { Avatar } from "@/components/Avatar";
 
 interface NavbarProps {
   jobs?: Job[];
-  onNewApplication?: () => void;
 }
 
-export function Navbar({ jobs = [], onNewApplication }: NavbarProps) {
-  const pathname = usePathname();
+export function Navbar({ jobs = [] }: NavbarProps) {
   const { data: session } = useSession();
   const activeCount = jobs.filter((j) => j.status === "processing").length;
   const user = session?.user;
@@ -59,19 +56,6 @@ export function Navbar({ jobs = [], onNewApplication }: NavbarProps) {
           >
             {activeCount} processing
           </span>
-        )}
-
-        {pathname === "/" && onNewApplication && (
-          <button
-            onClick={onNewApplication}
-            className="text-sm font-medium px-4 py-1.5 rounded-full transition-all active:scale-95"
-            style={{
-              background: "#1DB954",
-              color: "#000000",
-            }}
-          >
-            New Application
-          </button>
         )}
 
         {user && (

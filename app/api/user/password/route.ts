@@ -17,9 +17,14 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    if (newPassword.length < 8) {
+    if (
+      newPassword.length < 8 ||
+      newPassword.length > 12 ||
+      !/[a-zA-Z]/.test(newPassword) ||
+      !/[0-9]/.test(newPassword)
+    ) {
       return NextResponse.json(
-        { error: "New password must be at least 8 characters." },
+        { error: "Password must be 8–12 characters with at least one letter and one digit." },
         { status: 400 }
       );
     }

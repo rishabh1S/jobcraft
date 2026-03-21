@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
 
 type Tab = "login" | "register";
 
@@ -16,6 +16,7 @@ export default function AuthPage() {
   const [loginPassword, setLoginPassword] = useState("");
   const [loginError, setLoginError] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
 
   // Register state
   const [regName, setRegName] = useState("");
@@ -23,6 +24,7 @@ export default function AuthPage() {
   const [regPassword, setRegPassword] = useState("");
   const [regError, setRegError] = useState("");
   const [regLoading, setRegLoading] = useState(false);
+  const [showRegPassword, setShowRegPassword] = useState(false);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -179,16 +181,25 @@ export default function AuthPage() {
               </div>
               <div>
                 <label style={labelStyle}>Password</label>
-                <input
-                  type="password"
-                  value={loginPassword}
-                  onChange={(e) => setLoginPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  style={inputStyle}
-                  onFocus={(e) => { e.target.style.borderColor = "#f59e0b66"; }}
-                  onBlur={(e) => { e.target.style.borderColor = "#2a2a2a"; }}
-                />
+                <div style={{ position: "relative" }}>
+                  <input
+                    type={showLoginPassword ? "text" : "password"}
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                    placeholder="••••••••"
+                    required
+                    style={{ ...inputStyle, paddingRight: 36 }}
+                    onFocus={(e) => { e.target.style.borderColor = "#f59e0b66"; }}
+                    onBlur={(e) => { e.target.style.borderColor = "#2a2a2a"; }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowLoginPassword((s) => !s)}
+                    style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#6b6b6b", display: "flex", alignItems: "center" }}
+                  >
+                    {showLoginPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                  </button>
+                </div>
               </div>
 
               {loginError && (
@@ -256,16 +267,25 @@ export default function AuthPage() {
               </div>
               <div>
                 <label style={labelStyle}>Password</label>
-                <input
-                  type="password"
-                  value={regPassword}
-                  onChange={(e) => setRegPassword(e.target.value)}
-                  placeholder="At least 8 characters"
-                  required
-                  style={inputStyle}
-                  onFocus={(e) => { e.target.style.borderColor = "#f59e0b66"; }}
-                  onBlur={(e) => { e.target.style.borderColor = "#2a2a2a"; }}
-                />
+                <div style={{ position: "relative" }}>
+                  <input
+                    type={showRegPassword ? "text" : "password"}
+                    value={regPassword}
+                    onChange={(e) => setRegPassword(e.target.value)}
+                    placeholder="8–12 chars, letter + digit"
+                    required
+                    style={{ ...inputStyle, paddingRight: 36 }}
+                    onFocus={(e) => { e.target.style.borderColor = "#f59e0b66"; }}
+                    onBlur={(e) => { e.target.style.borderColor = "#2a2a2a"; }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowRegPassword((s) => !s)}
+                    style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#6b6b6b", display: "flex", alignItems: "center" }}
+                  >
+                    {showRegPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                  </button>
+                </div>
               </div>
 
               {regError && (

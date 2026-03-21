@@ -132,17 +132,26 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen" style={{ background: "#080808" }}>
-      <Navbar jobs={jobs} onNewApplication={() => setSheetOpen(true)} />
+      <Navbar jobs={jobs} />
 
       <main className="pt-14 px-4 md:px-8 max-w-7xl mx-auto">
         <div className="pt-8 pb-10">
-          <div className="mb-6">
-            <h1 className="text-xl font-semibold tracking-tight" style={{ color: "#f0ede8" }}>
-              Applications
-            </h1>
-            <p className="text-sm mt-1" style={{ color: "#6b6b6b" }}>
-              Track and tailor your job applications with AI
-            </p>
+          <div className="flex items-start justify-between mb-6">
+            <div>
+              <h1 className="text-xl font-semibold tracking-tight" style={{ color: "#f0ede8" }}>
+                Applications
+              </h1>
+              <p className="text-sm mt-1" style={{ color: "#6b6b6b" }}>
+                Track and tailor your job applications with AI
+              </p>
+            </div>
+            <button
+              onClick={() => setSheetOpen(true)}
+              className="text-sm font-medium px-4 py-2 rounded-full transition-all active:scale-95 shrink-0"
+              style={{ background: "#1DB954", color: "#000000" }}
+            >
+              + New Application
+            </button>
           </div>
 
           <StatsRow jobs={jobs} />

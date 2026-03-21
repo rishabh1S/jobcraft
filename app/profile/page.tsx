@@ -12,11 +12,13 @@ import {
   AlertCircle,
   Loader2,
   RefreshCw,
+  Lock,
 } from "lucide-react";
 import { Profile } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 import toast from "react-hot-toast";
 import { Avatar } from "@/components/Avatar";
+import { ChangePasswordModal } from "@/components/ChangePasswordModal";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -41,11 +43,8 @@ export default function ProfilePage() {
   const [nameValue, setNameValue] = useState(user?.name ?? "");
   const [nameSaving, setNameSaving] = useState(false);
 
-  // Password change state
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [passwordSaving, setPasswordSaving] = useState(false);
-  const [passwordError, setPasswordError] = useState("");
+  // Password modal
+  const [passwordModalOpen, setPasswordModalOpen] = useState(false);
 
   const { data, mutate } = useSWR<{ profile: Profile | null }>("/api/profile", fetcher);
   const { data: meData } = useSWR<{ hasPassword: boolean }>("/api/user/me", fetcher);
@@ -130,35 +129,6 @@ export default function ProfilePage() {
     }
   }
 
-  async function handleChangePassword(e: React.FormEvent) {
-    e.preventDefault();
-    setPasswordError("");
-    if (newPassword.length < 8) {
-      setPasswordError("New password must be at least 8 characters.");
-      return;
-    }
-    setPasswordSaving(true);
-    try {
-      const res = await fetch("/api/user/password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ currentPassword, newPassword }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setPasswordError(data.error || "Failed to update password.");
-      } else {
-        toast.success("Password updated.");
-        setCurrentPassword("");
-        setNewPassword("");
-      }
-    } catch {
-      setPasswordError("Something went wrong.");
-    } finally {
-      setPasswordSaving(false);
-    }
-  }
-
   const displayProfile = uploadResult?.success ? uploadResult : profile ? {
     success: true,
     fileName: profile.fileName,
@@ -166,16 +136,16 @@ export default function ProfilePage() {
     updatedAt: profile.updatedAt,
   } : null;
 
-  const inputStyle: React.CSSProperties = {
-    width: "100%",
-    padding: "9px 12px",
+  const nameInputStyle: React.CSSProperties = {
+    padding: "6px 10px",
     background: "#0d0d0d",
     border: "1px solid #2a2a2a",
     borderRadius: 8,
     color: "#f0ede8",
-    fontSize: 14,
+    fontSize: 13,
     outline: "none",
-    boxSizing: "border-box",
+    flex: 1,
+    minWidth: 0,
   };
 
   return (
@@ -214,178 +184,136 @@ export default function ProfilePage() {
             Back to dashboard
           </Link>
 
-          {/* ── Account section ── */}
-          <div className="mb-10">
-            <h1 className="text-xl font-semibold tracking-tight mb-1" style={{ color: "#f0ede8" }}>
-              Account
-            </h1>
-            <p className="text-sm mb-6" style={{ color: "#6b6b6b" }}>
-              Your profile and settings.
-            </p>
+          <h1 className="text-xl font-semibold tracking-tight mb-6" style={{ color: "#f0ede8" }}>
+            Profile
+          </h1>
 
-            <div
-              className="p-5 rounded-xl space-y-5"
-              style={{ background: "#111111", border: "1px solid #1f1f1f" }}
-            >
-              {/* Avatar + name + email */}
-              <div className="flex items-center gap-4">
-                <Avatar name={user?.name} image={user?.image} size={52} />
-                <div className="flex-1 min-w-0">
-                  {editingName ? (
-                    <div className="flex items-center gap-2">
-                      <input
-                        value={nameValue}
-                        onChange={(e) => setNameValue(e.target.value)}
-                        style={{ ...inputStyle, padding: "6px 10px", fontSize: 13 }}
-                        onFocus={(e) => { e.target.style.borderColor = "#f59e0b66"; }}
-                        onBlur={(e) => { e.target.style.borderColor = "#2a2a2a"; }}
-                        autoFocus
-                        onKeyDown={(e) => { if (e.key === "Enter") handleSaveName(); if (e.key === "Escape") setEditingName(false); }}
-                      />
-                      <button
-                        onClick={handleSaveName}
-                        disabled={nameSaving}
-                        style={{
-                          padding: "6px 12px",
-                          borderRadius: 6,
-                          background: "#1DB954",
-                          color: "#000",
-                          fontSize: 12,
-                          fontWeight: 600,
-                          border: "none",
-                          cursor: "pointer",
-                          whiteSpace: "nowrap",
-                          opacity: nameSaving ? 0.7 : 1,
-                        }}
-                      >
-                        {nameSaving ? "Saving…" : "Save"}
-                      </button>
-                      <button
-                        onClick={() => { setEditingName(false); setNameValue(user?.name ?? ""); }}
-                        style={{ fontSize: 12, color: "#6b6b6b", background: "none", border: "none", cursor: "pointer" }}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium truncate" style={{ color: "#f0ede8" }}>
-                        {user?.name ?? "—"}
-                      </p>
-                      <button
-                        onClick={() => { setEditingName(true); setNameValue(user?.name ?? ""); }}
-                        style={{ fontSize: 11, color: "#6b6b6b", background: "none", border: "none", cursor: "pointer" }}
-                        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#f0ede8"; }}
-                        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#6b6b6b"; }}
-                      >
-                        Edit
-                      </button>
-                    </div>
-                  )}
-                  <p className="text-xs mt-0.5 truncate" style={{ color: "#6b6b6b" }}>
-                    {user?.email}
-                  </p>
-                </div>
-              </div>
-
-              {/* Password change — credentials users only */}
-              {hasPassword && (
-                <div style={{ borderTop: "1px solid #1f1f1f", paddingTop: 16 }}>
-                  <p className="text-xs font-medium mb-3" style={{ color: "#6b6b6b" }}>
-                    Change password
-                  </p>
-                  <form onSubmit={handleChangePassword} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {/* ── Unified card ── */}
+          <div
+            className="rounded-xl overflow-hidden mb-6"
+            style={{ background: "#111111", border: "1px solid #1f1f1f" }}
+          >
+            {/* Avatar + name + email */}
+            <div className="flex items-center gap-4 p-5">
+              <Avatar name={user?.name} image={user?.image} size={52} />
+              <div className="flex-1 min-w-0">
+                {editingName ? (
+                  <div className="flex items-center gap-2">
                     <input
-                      type="password"
-                      placeholder="Current password"
-                      value={currentPassword}
-                      onChange={(e) => setCurrentPassword(e.target.value)}
-                      required
-                      style={{ ...inputStyle, fontSize: 13 }}
+                      value={nameValue}
+                      onChange={(e) => setNameValue(e.target.value)}
+                      style={nameInputStyle}
                       onFocus={(e) => { e.target.style.borderColor = "#f59e0b66"; }}
                       onBlur={(e) => { e.target.style.borderColor = "#2a2a2a"; }}
+                      autoFocus
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleSaveName();
+                        if (e.key === "Escape") { setEditingName(false); setNameValue(user?.name ?? ""); }
+                      }}
                     />
-                    <input
-                      type="password"
-                      placeholder="New password (min 8 chars)"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      required
-                      style={{ ...inputStyle, fontSize: 13 }}
-                      onFocus={(e) => { e.target.style.borderColor = "#f59e0b66"; }}
-                      onBlur={(e) => { e.target.style.borderColor = "#2a2a2a"; }}
-                    />
-                    {passwordError && (
-                      <p style={{ fontSize: 12, color: "#ef4444", margin: 0 }}>{passwordError}</p>
-                    )}
                     <button
-                      type="submit"
-                      disabled={passwordSaving}
-                      className="flex items-center justify-center gap-2"
+                      onClick={handleSaveName}
+                      disabled={nameSaving}
                       style={{
-                        padding: "8px 0",
-                        borderRadius: 8,
-                        background: "#1a1a1a",
-                        border: "1px solid #2a2a2a",
-                        color: "#f0ede8",
-                        fontSize: 13,
-                        fontWeight: 500,
-                        cursor: passwordSaving ? "not-allowed" : "pointer",
-                        opacity: passwordSaving ? 0.7 : 1,
+                        padding: "6px 12px",
+                        borderRadius: 6,
+                        background: "#1DB954",
+                        color: "#000",
+                        fontSize: 12,
+                        fontWeight: 600,
+                        border: "none",
+                        cursor: "pointer",
+                        whiteSpace: "nowrap",
+                        opacity: nameSaving ? 0.7 : 1,
+                        flexShrink: 0,
                       }}
                     >
-                      {passwordSaving && <Loader2 size={12} className="spinner" />}
-                      Update password
+                      {nameSaving ? "Saving…" : "Save"}
                     </button>
-                  </form>
+                    <button
+                      onClick={() => { setEditingName(false); setNameValue(user?.name ?? ""); }}
+                      style={{ fontSize: 12, color: "#6b6b6b", background: "none", border: "none", cursor: "pointer", flexShrink: 0 }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium truncate" style={{ color: "#f0ede8" }}>
+                      {user?.name ?? "—"}
+                    </p>
+                    <button
+                      onClick={() => { setEditingName(true); setNameValue(user?.name ?? ""); }}
+                      style={{ fontSize: 11, color: "#6b6b6b", background: "none", border: "none", cursor: "pointer", flexShrink: 0 }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#f0ede8"; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#6b6b6b"; }}
+                    >
+                      Edit
+                    </button>
+                  </div>
+                )}
+                <p className="text-xs mt-0.5 truncate" style={{ color: "#6b6b6b" }}>
+                  {user?.email}
+                </p>
+              </div>
+            </div>
+
+            {/* Resume row */}
+            {profile && !uploadResult && (
+              <>
+                <div style={{ height: 1, background: "#1f1f1f" }} />
+                <div className="flex items-center gap-3 px-5 py-4">
+                  <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                    style={{ background: "#1a1a1a" }}
+                  >
+                    <FileText size={14} style={{ color: "#22c55e" }} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate" style={{ color: "#f0ede8" }}>
+                      {profile.fileName}
+                    </p>
+                    <p className="text-xs" style={{ color: "#6b6b6b" }}>
+                      Last updated{" "}
+                      {formatDistanceToNow(new Date(profile.updatedAt), { addSuffix: true })}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => fileRef.current?.click()}
+                    className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-colors shrink-0"
+                    style={{ background: "#1a1a1a", border: "1px solid #2a2a2a", color: "#6b6b6b" }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#f0ede8"; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#6b6b6b"; }}
+                  >
+                    <RefreshCw size={11} />
+                    Replace
+                  </button>
                 </div>
-              )}
-            </div>
-          </div>
+              </>
+            )}
 
-          {/* ── Master Resume section ── */}
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold tracking-tight mb-1" style={{ color: "#f0ede8" }}>
-              Master Resume
-            </h2>
-            <p className="text-sm" style={{ color: "#6b6b6b" }}>
-              Your base resume. Every application tailors from this.
-            </p>
+            {/* Change password row — credentials users only */}
+            {hasPassword && (
+              <>
+                <div style={{ height: 1, background: "#1f1f1f" }} />
+                <div className="flex items-center justify-between px-5 py-3">
+                  <div className="flex items-center gap-2.5">
+                    <Lock size={13} style={{ color: "#6b6b6b" }} />
+                    <span className="text-xs" style={{ color: "#6b6b6b" }}>Password</span>
+                  </div>
+                  <button
+                    onClick={() => setPasswordModalOpen(true)}
+                    className="text-xs transition-colors"
+                    style={{ background: "none", border: "none", cursor: "pointer", color: "#6b6b6b" }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#f0ede8"; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#6b6b6b"; }}
+                  >
+                    Change password →
+                  </button>
+                </div>
+              </>
+            )}
           </div>
-
-          {/* Current profile info */}
-          {profile && !uploadResult && (
-            <div
-              className="flex items-center gap-3 p-3 rounded-lg mb-6"
-              style={{ background: "#111111", border: "1px solid #1f1f1f" }}
-            >
-              <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                style={{ background: "#1a1a1a" }}
-              >
-                <FileText size={14} style={{ color: "#22c55e" }} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate" style={{ color: "#f0ede8" }}>
-                  {profile.fileName}
-                </p>
-                <p className="text-xs" style={{ color: "#6b6b6b" }}>
-                  Last updated{" "}
-                  {formatDistanceToNow(new Date(profile.updatedAt), { addSuffix: true })}
-                </p>
-              </div>
-              <button
-                onClick={() => fileRef.current?.click()}
-                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-colors shrink-0"
-                style={{ background: "#1a1a1a", border: "1px solid #2a2a2a", color: "#6b6b6b" }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#f0ede8"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#6b6b6b"; }}
-              >
-                <RefreshCw size={11} />
-                Replace
-              </button>
-            </div>
-          )}
 
           {/* Upload zone */}
           <div
@@ -397,7 +325,7 @@ export default function ProfilePage() {
             style={{
               border: `2px dashed ${dragOver ? "#f59e0b" : uploading ? "#2a2a2a" : "#1f1f1f"}`,
               background: dragOver ? "#1a120008" : "#0d0d0d",
-              minHeight: "200px",
+              minHeight: "180px",
             }}
           >
             <input
@@ -428,8 +356,10 @@ export default function ProfilePage() {
                   <Upload size={20} style={{ color: dragOver ? "#f59e0b" : "#6b6b6b" }} />
                 </div>
                 <div className="text-center">
-                  <p className="text-sm font-medium" style={{ color: "#f0ede8" }}>Drop your resume here</p>
-                  <p className="text-xs mt-1" style={{ color: "#6b6b6b" }}>or click to browse</p>
+                  <p className="text-sm font-medium" style={{ color: "#f0ede8" }}>
+                    {profile ? "Replace resume" : "Upload your resume"}
+                  </p>
+                  <p className="text-xs mt-1" style={{ color: "#6b6b6b" }}>PDF or DOCX — drop here or click to browse</p>
                 </div>
                 <div className="flex gap-2">
                   {["PDF", "DOCX"].map((fmt) => (
@@ -489,6 +419,11 @@ export default function ProfilePage() {
           )}
         </div>
       </main>
+
+      <ChangePasswordModal
+        open={passwordModalOpen}
+        onClose={() => setPasswordModalOpen(false)}
+      />
     </div>
   );
 }
