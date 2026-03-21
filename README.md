@@ -1,8 +1,7 @@
 # JobCraft — AI Resume Tailor
 
 Track job applications and get AI-powered resume suggestions tailored to each job description.
-
----
+ ![JobCraft Dashboard](./public/dashboard.png)
 
 ## What it does
 
@@ -15,7 +14,6 @@ Track job applications and get AI-powered resume suggestions tailored to each jo
 - Auto-ghosts applications that stay in "Applied" for more than 7 days with no update
 - Click a job link to open it and auto-mark as Applied in one action
 
----
 
 ## Tech stack
 
@@ -30,7 +28,6 @@ Track job applications and get AI-powered resume suggestions tailored to each jo
 | Data fetching | SWR (live polling while AI is running) |
 | UI | `lucide-react` · `react-hot-toast` · `date-fns` |
 
----
 
 ## Project structure
 
@@ -69,7 +66,6 @@ prisma/
 prisma.config.ts                # Prisma v7 config — loads .env.local manually
 ```
 
----
 
 ## Getting started
 
@@ -109,7 +105,6 @@ yarn dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
----
 
 ## Usage
 
@@ -121,7 +116,6 @@ Open [http://localhost:3000](http://localhost:3000).
 6. When ready to apply, click the **external link icon** next to the company name — opens the job URL and auto-sets status to "Applied"
 7. Update the application status dropdown as you progress
 
----
 
 ## Application status flow
 
@@ -136,7 +130,6 @@ Ready to Apply → Applied → Received Revert → Interviewing → Selected
 - **Applied** — stamped with a timestamp when you click the job link (or set manually)
 - **Ghosted** — auto-set if still "Applied" after 7 days with no status change
 
----
 
 ## Key technical notes
 
