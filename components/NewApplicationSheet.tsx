@@ -65,7 +65,7 @@ export function NewApplicationSheet({
 
   const charCount = jobDescription.length;
   const charColor =
-    charCount >= 4000 ? "#ef4444" : charCount > 3800 ? "#f59e0b" : "#3a3a3a";
+    charCount >= 4000 ? "var(--error)" : charCount > 3800 ? "var(--accent)" : "var(--border-strong)";
 
   return (
     <>
@@ -80,29 +80,29 @@ export function NewApplicationSheet({
       <div
         className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-md flex flex-col animate-slide-in-right"
         style={{
-          background: "#111111",
-          borderLeft: "1px solid #1f1f1f",
+          background: "var(--surface)",
+          borderLeft: "1px solid var(--border)",
         }}
       >
         {/* Header */}
         <div
           className="flex items-center justify-between px-6 py-4"
-          style={{ borderBottom: "1px solid #1f1f1f" }}
+          style={{ borderBottom: "1px solid var(--border)" }}
         >
           <div>
-            <h2 className="font-semibold text-sm" style={{ color: "#f0ede8" }}>
+            <h2 className="font-semibold text-sm" style={{ color: "var(--foreground)" }}>
               New Application
             </h2>
-            <p className="text-xs mt-0.5" style={{ color: "#6b6b6b" }}>
+            <p className="text-xs mt-0.5" style={{ color: "var(--muted)" }}>
               Paste the job details to tailor your resume
             </p>
           </div>
           <button
             onClick={onClose}
             className="p-1.5 rounded transition-colors"
-            style={{ color: "#6b6b6b" }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#f0ede8"; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#6b6b6b"; }}
+            style={{ color: "var(--muted)" }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--foreground)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--muted)"; }}
           >
             <X size={16} />
           </button>
@@ -116,8 +116,8 @@ export function NewApplicationSheet({
               className="flex items-start gap-3 p-3 rounded-lg"
               style={{ background: "#1a1500", border: "1px solid #3a2a00" }}
             >
-              <AlertTriangle size={14} className="mt-0.5 shrink-0" style={{ color: "#f59e0b" }} />
-              <p className="text-xs" style={{ color: "#d4a800" }}>
+              <AlertTriangle size={14} className="mt-0.5 shrink-0" style={{ color: "var(--accent)" }} />
+              <p className="text-xs" style={{ color: "var(--accent)" }}>
                 No master resume found.{" "}
                 <Link href="/profile" className="underline font-medium">
                   Upload your resume
@@ -129,9 +129,9 @@ export function NewApplicationSheet({
 
           {/* Job URL */}
           <div className="space-y-1.5">
-            <label className="text-xs font-medium" style={{ color: "#6b6b6b" }}>
+            <label className="text-xs font-medium" style={{ color: "var(--muted)" }}>
               Job URL{" "}
-              <span style={{ color: "#3a3a3a" }}>— optional</span>
+              <span style={{ color: "var(--border-strong)" }}>— optional</span>
             </label>
             <input
               type="url"
@@ -140,20 +140,20 @@ export function NewApplicationSheet({
               placeholder="https://linkedin.com/jobs/..."
               className="w-full rounded-lg px-3 py-2.5 text-sm outline-none transition-colors"
               style={{
-                background: "#0d0d0d",
-                border: "1px solid #1f1f1f",
-                color: "#f0ede8",
+                background: "var(--surface-sunken)",
+                border: "1px solid var(--border)",
+                color: "var(--foreground)",
               }}
-              onFocus={(e) => { (e.target as HTMLInputElement).style.borderColor = "#f59e0b44"; }}
-              onBlur={(e) => { (e.target as HTMLInputElement).style.borderColor = "#1f1f1f"; }}
+              onFocus={(e) => { (e.target as HTMLInputElement).style.borderColor = "color-mix(in srgb, var(--accent) 27%, transparent)"; }}
+              onBlur={(e) => { (e.target as HTMLInputElement).style.borderColor = "var(--border)"; }}
             />
           </div>
 
           {/* Job Description */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-medium" style={{ color: "#6b6b6b" }}>
-                Job Description <span style={{ color: "#ef4444" }}>*</span>
+              <label className="text-xs font-medium" style={{ color: "var(--muted)" }}>
+                Job Description <span style={{ color: "var(--error)" }}>*</span>
               </label>
               <span className="font-mono text-xs" style={{ color: charColor }}>
                 {charCount} / 4000
@@ -167,18 +167,18 @@ export function NewApplicationSheet({
               required
               className="w-full rounded-lg px-3 py-2.5 text-sm outline-none transition-colors resize-none"
               style={{
-                background: "#0d0d0d",
-                border: "1px solid #1f1f1f",
-                color: "#f0ede8",
+                background: "var(--surface-sunken)",
+                border: "1px solid var(--border)",
+                color: "var(--foreground)",
               }}
-              onFocus={(e) => { (e.target as HTMLTextAreaElement).style.borderColor = "#f59e0b44"; }}
-              onBlur={(e) => { (e.target as HTMLTextAreaElement).style.borderColor = "#1f1f1f"; }}
+              onFocus={(e) => { (e.target as HTMLTextAreaElement).style.borderColor = "color-mix(in srgb, var(--accent) 27%, transparent)"; }}
+              onBlur={(e) => { (e.target as HTMLTextAreaElement).style.borderColor = "var(--border)"; }}
             />
           </div>
         </form>
 
         {/* Footer */}
-        <div className="px-6 py-4" style={{ borderTop: "1px solid #1f1f1f" }}>
+        <div className="px-6 py-4" style={{ borderTop: "1px solid var(--border)" }}>
           <button
             onClick={handleSubmit}
             disabled={!profile || submitting || !jobDescription.trim()}

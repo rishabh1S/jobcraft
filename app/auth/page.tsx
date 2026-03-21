@@ -81,10 +81,10 @@ export default function AuthPage() {
   const inputStyle: React.CSSProperties = {
     width: "100%",
     padding: "10px 12px",
-    background: "#0d0d0d",
-    border: "1px solid #2a2a2a",
+    background: "var(--surface-sunken)",
+    border: "1px solid var(--border-strong)",
     borderRadius: 8,
-    color: "#f0ede8",
+    color: "var(--foreground)",
     fontSize: 14,
     outline: "none",
     boxSizing: "border-box",
@@ -93,27 +93,19 @@ export default function AuthPage() {
   const labelStyle: React.CSSProperties = {
     display: "block",
     fontSize: 12,
-    color: "#6b6b6b",
+    color: "var(--muted)",
     marginBottom: 6,
   };
 
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4"
-      style={{ background: "#080808" }}
+      style={{ background: "transparent" }}
     >
       <div style={{ width: "100%", maxWidth: 400 }}>
         {/* Logo */}
         <div className="flex items-center gap-2.5 justify-center mb-8">
-          <div
-            className="w-8 h-8 rounded-lg flex items-center justify-center"
-            style={{ background: "#f0ede8", boxShadow: "0 0 12px rgba(240,237,232,0.15)" }}
-          >
-            <span className="font-bold text-sm tracking-tight" style={{ color: "#080808" }}>
-              JC
-            </span>
-          </div>
-          <span className="font-semibold text-base tracking-tight" style={{ color: "#f0ede8" }}>
+          <span className="font-semibold text-base tracking-tight" style={{ color: "var(--foreground)" }}>
             JobCraft
           </span>
         </div>
@@ -121,8 +113,8 @@ export default function AuthPage() {
         {/* Card */}
         <div
           style={{
-            background: "#111111",
-            border: "1px solid #1f1f1f",
+            background: "var(--surface)",
+            border: "1px solid var(--border)",
             borderRadius: 16,
             padding: 28,
           }}
@@ -131,7 +123,7 @@ export default function AuthPage() {
           <div
             className="flex mb-6"
             style={{
-              background: "#0d0d0d",
+              background: "var(--surface-sunken)",
               borderRadius: 10,
               padding: 4,
             }}
@@ -153,8 +145,8 @@ export default function AuthPage() {
                   border: "none",
                   cursor: "pointer",
                   transition: "all 0.15s",
-                  background: tab === t ? "#1a1a1a" : "transparent",
-                  color: tab === t ? "#f0ede8" : "#6b6b6b",
+                  background: tab === t ? "var(--surface-elevated)" : "transparent",
+                  color: tab === t ? "var(--foreground)" : "var(--muted)",
                   boxShadow: tab === t ? "0 1px 4px rgba(0,0,0,0.4)" : "none",
                 }}
               >
@@ -175,8 +167,8 @@ export default function AuthPage() {
                   placeholder="you@example.com"
                   required
                   style={inputStyle}
-                  onFocus={(e) => { e.target.style.borderColor = "#f59e0b66"; }}
-                  onBlur={(e) => { e.target.style.borderColor = "#2a2a2a"; }}
+                  onFocus={(e) => { e.target.style.borderColor = "color-mix(in srgb, var(--accent) 40%, transparent)"; }}
+                  onBlur={(e) => { e.target.style.borderColor = "var(--border-strong)"; }}
                 />
               </div>
               <div>
@@ -189,13 +181,13 @@ export default function AuthPage() {
                     placeholder="••••••••"
                     required
                     style={{ ...inputStyle, paddingRight: 36 }}
-                    onFocus={(e) => { e.target.style.borderColor = "#f59e0b66"; }}
-                    onBlur={(e) => { e.target.style.borderColor = "#2a2a2a"; }}
+                    onFocus={(e) => { e.target.style.borderColor = "color-mix(in srgb, var(--accent) 40%, transparent)"; }}
+                    onBlur={(e) => { e.target.style.borderColor = "var(--border-strong)"; }}
                   />
                   <button
                     type="button"
                     onClick={() => setShowLoginPassword((s) => !s)}
-                    style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#6b6b6b", display: "flex", alignItems: "center" }}
+                    style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "var(--muted)", display: "flex", alignItems: "center" }}
                   >
                     {showLoginPassword ? <EyeOff size={14} /> : <Eye size={14} />}
                   </button>
@@ -203,7 +195,7 @@ export default function AuthPage() {
               </div>
 
               {loginError && (
-                <p style={{ fontSize: 12, color: "#ef4444", margin: 0 }}>{loginError}</p>
+                <p style={{ fontSize: 12, color: "var(--error)", margin: 0 }}>{loginError}</p>
               )}
 
               <button
@@ -227,9 +219,9 @@ export default function AuthPage() {
               </button>
 
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <div style={{ flex: 1, height: 1, background: "#1f1f1f" }} />
-                <span style={{ fontSize: 11, color: "#4b4b4b" }}>or</span>
-                <div style={{ flex: 1, height: 1, background: "#1f1f1f" }} />
+                <div style={{ flex: 1, height: 1, background: "var(--border)" }} />
+                <span style={{ fontSize: 11, color: "var(--muted)" }}>or</span>
+                <div style={{ flex: 1, height: 1, background: "var(--border)" }} />
               </div>
 
               <OAuthButtons />
@@ -248,8 +240,8 @@ export default function AuthPage() {
                   placeholder="Your name"
                   required
                   style={inputStyle}
-                  onFocus={(e) => { e.target.style.borderColor = "#f59e0b66"; }}
-                  onBlur={(e) => { e.target.style.borderColor = "#2a2a2a"; }}
+                  onFocus={(e) => { e.target.style.borderColor = "color-mix(in srgb, var(--accent) 40%, transparent)"; }}
+                  onBlur={(e) => { e.target.style.borderColor = "var(--border-strong)"; }}
                 />
               </div>
               <div>
@@ -261,8 +253,8 @@ export default function AuthPage() {
                   placeholder="you@example.com"
                   required
                   style={inputStyle}
-                  onFocus={(e) => { e.target.style.borderColor = "#f59e0b66"; }}
-                  onBlur={(e) => { e.target.style.borderColor = "#2a2a2a"; }}
+                  onFocus={(e) => { e.target.style.borderColor = "color-mix(in srgb, var(--accent) 40%, transparent)"; }}
+                  onBlur={(e) => { e.target.style.borderColor = "var(--border-strong)"; }}
                 />
               </div>
               <div>
@@ -275,13 +267,13 @@ export default function AuthPage() {
                     placeholder="8–12 chars, letter + digit"
                     required
                     style={{ ...inputStyle, paddingRight: 36 }}
-                    onFocus={(e) => { e.target.style.borderColor = "#f59e0b66"; }}
-                    onBlur={(e) => { e.target.style.borderColor = "#2a2a2a"; }}
+                    onFocus={(e) => { e.target.style.borderColor = "color-mix(in srgb, var(--accent) 40%, transparent)"; }}
+                    onBlur={(e) => { e.target.style.borderColor = "var(--border-strong)"; }}
                   />
                   <button
                     type="button"
                     onClick={() => setShowRegPassword((s) => !s)}
-                    style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#6b6b6b", display: "flex", alignItems: "center" }}
+                    style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "var(--muted)", display: "flex", alignItems: "center" }}
                   >
                     {showRegPassword ? <EyeOff size={14} /> : <Eye size={14} />}
                   </button>
@@ -289,7 +281,7 @@ export default function AuthPage() {
               </div>
 
               {regError && (
-                <p style={{ fontSize: 12, color: "#ef4444", margin: 0 }}>{regError}</p>
+                <p style={{ fontSize: 12, color: "var(--error)", margin: 0 }}>{regError}</p>
               )}
 
               <button
@@ -313,9 +305,9 @@ export default function AuthPage() {
               </button>
 
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <div style={{ flex: 1, height: 1, background: "#1f1f1f" }} />
-                <span style={{ fontSize: 11, color: "#4b4b4b" }}>or</span>
-                <div style={{ flex: 1, height: 1, background: "#1f1f1f" }} />
+                <div style={{ flex: 1, height: 1, background: "var(--border)" }} />
+                <span style={{ fontSize: 11, color: "var(--muted)" }}>or</span>
+                <div style={{ flex: 1, height: 1, background: "var(--border)" }} />
               </div>
 
               <OAuthButtons />
@@ -342,9 +334,9 @@ function OAuthButtons() {
     gap: 8,
     padding: "9px 0",
     borderRadius: 8,
-    background: "#0d0d0d",
-    border: "1px solid #2a2a2a",
-    color: "#f0ede8",
+    background: "var(--surface-sunken)",
+    border: "1px solid var(--border-strong)",
+    color: "var(--foreground)",
     fontSize: 13,
     fontWeight: 500,
     cursor: "pointer",
@@ -396,7 +388,7 @@ function GoogleIcon() {
 
 function GitHubIcon() {
   return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="#f0ede8">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
       <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
     </svg>
   );

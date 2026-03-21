@@ -56,15 +56,15 @@ export function StatsRow({ jobs }: StatsRowProps) {
           <div
             key={stat.label}
             className="p-4 rounded-lg"
-            style={{ background: "#111111", border: "1px solid #1f1f1f" }}
+            style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
           >
             <div
               className="font-mono text-2xl font-bold mb-1"
-              style={{ color: stat.highlight ? highlightColors[stat.highlight] : "#f0ede8" }}
+              style={{ color: stat.highlight ? highlightColors[stat.highlight] : "var(--foreground)" }}
             >
               {stat.value}
             </div>
-            <div className="text-xs" style={{ color: "#6b6b6b" }}>
+            <div className="text-xs" style={{ color: "var(--muted)" }}>
               {stat.label}
             </div>
           </div>
@@ -74,27 +74,27 @@ export function StatsRow({ jobs }: StatsRowProps) {
       {total > 0 && (
         <div
           className="px-4 py-3 rounded-lg flex flex-wrap items-center gap-4"
-          style={{ background: "#111111", border: "1px solid #1f1f1f" }}
+          style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
         >
           {avgAtsBefore !== null && (
             <div className="flex items-center gap-2 shrink-0">
-              <span className="text-xs" style={{ color: "#6b6b6b" }}>Avg ATS</span>
+              <span className="text-xs" style={{ color: "var(--muted)" }}>Avg ATS</span>
               <span
                 className="font-mono text-xs font-semibold px-1.5 py-0.5 rounded"
-                style={{ color: highlightColors[atsHighlight(avgAtsBefore) ?? ""] ?? "#f0ede8" }}
+                style={{ color: highlightColors[atsHighlight(avgAtsBefore) ?? ""] ?? "var(--foreground)" }}
               >
                 {avgAtsBefore}
               </span>
               {avgAtsAfter !== null && (
                 <>
-                  <span className="text-xs" style={{ color: "#3a3a3a" }}>→</span>
+                  <span className="text-xs" style={{ color: "var(--border-strong)" }}>→</span>
                   <span
                     className="font-mono text-xs font-semibold px-1.5 py-0.5 rounded"
-                    style={{ color: highlightColors[atsHighlight(avgAtsAfter) ?? ""] ?? "#f0ede8" }}
+                    style={{ color: highlightColors[atsHighlight(avgAtsAfter) ?? ""] ?? "var(--foreground)" }}
                   >
                     {avgAtsAfter}
                   </span>
-                  <span className="text-xs" style={{ color: "#22c55e" }}>
+                  <span className="text-xs" style={{ color: "var(--success)" }}>
                     +{avgAtsAfter - avgAtsBefore} projected
                   </span>
                 </>
@@ -103,13 +103,13 @@ export function StatsRow({ jobs }: StatsRowProps) {
           )}
 
           {avgAtsBefore !== null && responseRate !== null && (
-            <div className="w-px h-4 shrink-0" style={{ background: "#1f1f1f" }} />
+            <div className="w-px h-4 shrink-0" style={{ background: "var(--border)" }} />
           )}
 
           {responseRate !== null && (
             <>
-              <span className="text-xs shrink-0" style={{ color: "#6b6b6b" }}>Response rate</span>
-              <div className="flex-1 h-1.5 rounded-full overflow-hidden min-w-16" style={{ background: "#1f1f1f" }}>
+              <span className="text-xs shrink-0" style={{ color: "var(--muted)" }}>Response rate</span>
+              <div className="flex-1 h-1.5 rounded-full overflow-hidden min-w-16" style={{ background: "var(--border)" }}>
                 <div
                   className="h-full rounded-full transition-all"
                   style={{
@@ -118,7 +118,7 @@ export function StatsRow({ jobs }: StatsRowProps) {
                   }}
                 />
               </div>
-              <span className="font-mono text-xs shrink-0" style={{ color: "#f0ede8" }}>
+              <span className="font-mono text-xs shrink-0" style={{ color: "var(--foreground)" }}>
                 {responseRate}%
               </span>
             </>

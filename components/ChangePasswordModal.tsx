@@ -46,10 +46,10 @@ function PasswordInput({
   const inputStyle: React.CSSProperties = {
     width: "100%",
     padding: "9px 36px 9px 12px",
-    background: "#0d0d0d",
-    border: "1px solid #2a2a2a",
+    background: "var(--surface-sunken)",
+    border: "1px solid var(--border-strong)",
     borderRadius: 8,
-    color: "#f0ede8",
+    color: "var(--foreground)",
     fontSize: 13,
     outline: "none",
     boxSizing: "border-box",
@@ -64,8 +64,8 @@ function PasswordInput({
         placeholder={placeholder}
         required={required}
         style={inputStyle}
-        onFocus={(e) => { e.target.style.borderColor = "#f59e0b66"; }}
-        onBlur={(e) => { e.target.style.borderColor = "#2a2a2a"; }}
+        onFocus={(e) => { e.target.style.borderColor = "color-mix(in srgb, var(--accent) 40%, transparent)"; }}
+        onBlur={(e) => { e.target.style.borderColor = "var(--border-strong)"; }}
       />
       <button
         type="button"
@@ -79,7 +79,7 @@ function PasswordInput({
           border: "none",
           cursor: "pointer",
           padding: 0,
-          color: "#6b6b6b",
+          color: "var(--muted)",
           display: "flex",
           alignItems: "center",
         }}
@@ -165,23 +165,23 @@ export function ChangePasswordModal({ open, onClose }: ChangePasswordModalProps)
           transform: "translate(-50%, -50%)",
           width: "100%",
           maxWidth: 380,
-          background: "#111111",
-          border: "1px solid #1f1f1f",
+          background: "var(--surface)",
+          border: "1px solid var(--border)",
           borderRadius: 16,
           padding: 24,
         }}
       >
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
-          <p className="text-sm font-semibold" style={{ color: "#f0ede8" }}>
+          <p className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>
             Change password
           </p>
           <button
             type="button"
             onClick={onClose}
-            style={{ background: "none", border: "none", cursor: "pointer", color: "#6b6b6b", display: "flex" }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#f0ede8"; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#6b6b6b"; }}
+            style={{ background: "none", border: "none", cursor: "pointer", color: "var(--muted)", display: "flex" }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--foreground)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--muted)"; }}
           >
             <X size={16} />
           </button>
@@ -190,7 +190,7 @@ export function ChangePasswordModal({ open, onClose }: ChangePasswordModalProps)
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {/* Current password */}
           <div>
-            <label style={{ display: "block", fontSize: 11, color: "#6b6b6b", marginBottom: 5 }}>
+            <label style={{ display: "block", fontSize: 11, color: "var(--muted)", marginBottom: 5 }}>
               Current password
             </label>
             <PasswordInput
@@ -203,7 +203,7 @@ export function ChangePasswordModal({ open, onClose }: ChangePasswordModalProps)
 
           {/* New password */}
           <div>
-            <label style={{ display: "block", fontSize: 11, color: "#6b6b6b", marginBottom: 5 }}>
+            <label style={{ display: "block", fontSize: 11, color: "var(--muted)", marginBottom: 5 }}>
               New password
             </label>
             <PasswordInput
@@ -222,9 +222,9 @@ export function ChangePasswordModal({ open, onClose }: ChangePasswordModalProps)
                       fontSize: 10,
                       padding: "2px 8px",
                       borderRadius: 99,
-                      background: req.met ? "#0a2010" : "#1a1a1a",
-                      border: `1px solid ${req.met ? "#22c55e44" : "#2a2a2a"}`,
-                      color: req.met ? "#22c55e" : "#6b6b6b",
+                      background: req.met ? "#0a2010" : "var(--surface-elevated)",
+                      border: `1px solid ${req.met ? "#22c55e44" : "var(--border-strong)"}`,
+                      color: req.met ? "var(--success)" : "var(--muted)",
                     }}
                   >
                     {req.met ? "✓ " : ""}{req.label}
@@ -236,7 +236,7 @@ export function ChangePasswordModal({ open, onClose }: ChangePasswordModalProps)
 
           {/* Confirm password */}
           <div>
-            <label style={{ display: "block", fontSize: 11, color: "#6b6b6b", marginBottom: 5 }}>
+            <label style={{ display: "block", fontSize: 11, color: "var(--muted)", marginBottom: 5 }}>
               Confirm new password
             </label>
             <PasswordInput
@@ -246,12 +246,12 @@ export function ChangePasswordModal({ open, onClose }: ChangePasswordModalProps)
               required
             />
             {confirm.length > 0 && next !== confirm && (
-              <p style={{ fontSize: 11, color: "#ef4444", marginTop: 4 }}>Passwords do not match.</p>
+              <p style={{ fontSize: 11, color: "var(--error)", marginTop: 4 }}>Passwords do not match.</p>
             )}
           </div>
 
           {error && (
-            <p style={{ fontSize: 12, color: "#ef4444", margin: 0 }}>{error}</p>
+            <p style={{ fontSize: 12, color: "var(--error)", margin: 0 }}>{error}</p>
           )}
 
           <button

@@ -3,10 +3,35 @@
 :root {
   --background: #080808;
   --foreground: #f0ede8;
+  --foreground-subtle: #c8c4be;
   --surface: #111111;
+  --surface-elevated: #1a1a1a;
+  --surface-sunken: #0d0d0d;
   --border: #1f1f1f;
+  --border-strong: #2a2a2a;
   --muted: #6b6b6b;
   --accent: #f59e0b;
+  --success: #22c55e;
+  --error: #ef4444;
+  --navbar-bg: rgba(8,8,8,0.92);
+  --gradient: radial-gradient(100% 50% at 50% 100%, rgba(0,255,165,0.13) 0, rgba(0,163,255,0) 50%, rgba(0,163,255,0) 100%);
+}
+
+.light {
+  --background: #f5f4f1;
+  --foreground: #111111;
+  --foreground-subtle: #444444;
+  --surface: #ffffff;
+  --surface-elevated: #f0ede8;
+  --surface-sunken: #e8e6e1;
+  --border: #e2e0db;
+  --border-strong: #ccc9c2;
+  --muted: #8a8a8a;
+  --accent: #d97706;
+  --success: #16a34a;
+  --error: #dc2626;
+  --navbar-bg: rgba(245,244,241,0.92);
+  --gradient: radial-gradient(100% 50% at 50% 100%, rgba(0,255,165,0.13) 0, rgba(0,163,255,0) 50%, rgba(0,163,255,0) 100%);
 }
 
 @theme inline {

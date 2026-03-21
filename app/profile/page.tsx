@@ -138,10 +138,10 @@ export default function ProfilePage() {
 
   const nameInputStyle: React.CSSProperties = {
     padding: "6px 10px",
-    background: "#0d0d0d",
-    border: "1px solid #2a2a2a",
+    background: "var(--surface-sunken)",
+    border: "1px solid var(--border-strong)",
     borderRadius: 8,
-    color: "#f0ede8",
+    color: "var(--foreground)",
     fontSize: 13,
     outline: "none",
     flex: 1,
@@ -149,22 +149,18 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ background: "#080808" }}>
+    <div className="min-h-screen">
       {/* Minimal nav */}
       <div
         className="fixed top-0 left-0 right-0 z-50 h-14 flex items-center px-6"
         style={{
-          background: "rgba(8,8,8,0.92)",
-          borderBottom: "1px solid #1f1f1f",
+          background: "var(--navbar-bg)",
+          borderBottom: "1px solid var(--border)",
           backdropFilter: "blur(12px)",
         }}
       >
         <Link href="/" className="flex items-center gap-2 group">
-          <span
-            className="w-2 h-2 rounded-full bg-amber-500"
-            style={{ boxShadow: "0 0 8px #f59e0b88" }}
-          />
-          <span className="font-mono text-sm font-semibold tracking-tight" style={{ color: "#f0ede8" }}>
+          <span className="font-mono text-sm font-semibold tracking-tight" style={{ color: "var(--foreground)" }}>
             JobCraft
           </span>
         </Link>
@@ -176,22 +172,22 @@ export default function ProfilePage() {
           <Link
             href="/"
             className="flex items-center gap-1.5 text-xs mb-8 transition-colors w-fit"
-            style={{ color: "#6b6b6b" }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "#f0ede8"; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "#6b6b6b"; }}
+            style={{ color: "var(--muted)" }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "var(--foreground)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "var(--muted)"; }}
           >
             <ArrowLeft size={12} />
             Back to dashboard
           </Link>
 
-          <h1 className="text-xl font-semibold tracking-tight mb-6" style={{ color: "#f0ede8" }}>
+          <h1 className="text-xl font-semibold tracking-tight mb-6" style={{ color: "var(--foreground)" }}>
             Profile
           </h1>
 
           {/* ── Unified card ── */}
           <div
             className="rounded-xl overflow-hidden mb-6"
-            style={{ background: "#111111", border: "1px solid #1f1f1f" }}
+            style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
           >
             {/* Avatar + name + email */}
             <div className="flex items-center gap-4 p-5">
@@ -203,8 +199,8 @@ export default function ProfilePage() {
                       value={nameValue}
                       onChange={(e) => setNameValue(e.target.value)}
                       style={nameInputStyle}
-                      onFocus={(e) => { e.target.style.borderColor = "#f59e0b66"; }}
-                      onBlur={(e) => { e.target.style.borderColor = "#2a2a2a"; }}
+                      onFocus={(e) => { e.target.style.borderColor = "color-mix(in srgb, var(--accent) 40%, transparent)"; }}
+                      onBlur={(e) => { e.target.style.borderColor = "var(--border-strong)"; }}
                       autoFocus
                       onKeyDown={(e) => {
                         if (e.key === "Enter") handleSaveName();
@@ -232,27 +228,27 @@ export default function ProfilePage() {
                     </button>
                     <button
                       onClick={() => { setEditingName(false); setNameValue(user?.name ?? ""); }}
-                      style={{ fontSize: 12, color: "#6b6b6b", background: "none", border: "none", cursor: "pointer", flexShrink: 0 }}
+                      style={{ fontSize: 12, color: "var(--muted)", background: "none", border: "none", cursor: "pointer", flexShrink: 0 }}
                     >
                       Cancel
                     </button>
                   </div>
                 ) : (
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium truncate" style={{ color: "#f0ede8" }}>
+                    <p className="text-sm font-medium truncate" style={{ color: "var(--foreground)" }}>
                       {user?.name ?? "—"}
                     </p>
                     <button
                       onClick={() => { setEditingName(true); setNameValue(user?.name ?? ""); }}
-                      style={{ fontSize: 11, color: "#6b6b6b", background: "none", border: "none", cursor: "pointer", flexShrink: 0 }}
-                      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#f0ede8"; }}
-                      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#6b6b6b"; }}
+                      style={{ fontSize: 11, color: "var(--muted)", background: "none", border: "none", cursor: "pointer", flexShrink: 0 }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--foreground)"; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--muted)"; }}
                     >
                       Edit
                     </button>
                   </div>
                 )}
-                <p className="text-xs mt-0.5 truncate" style={{ color: "#6b6b6b" }}>
+                <p className="text-xs mt-0.5 truncate" style={{ color: "var(--muted)" }}>
                   {user?.email}
                 </p>
               </div>
@@ -261,19 +257,19 @@ export default function ProfilePage() {
             {/* Resume row */}
             {profile && !uploadResult && (
               <>
-                <div style={{ height: 1, background: "#1f1f1f" }} />
+                <div style={{ height: 1, background: "var(--border)" }} />
                 <div className="flex items-center gap-3 px-5 py-4">
                   <div
                     className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                    style={{ background: "#1a1a1a" }}
+                    style={{ background: "var(--surface-elevated)" }}
                   >
-                    <FileText size={14} style={{ color: "#22c55e" }} />
+                    <FileText size={14} style={{ color: "var(--success)" }} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate" style={{ color: "#f0ede8" }}>
+                    <p className="text-sm font-medium truncate" style={{ color: "var(--foreground)" }}>
                       {profile.fileName}
                     </p>
-                    <p className="text-xs" style={{ color: "#6b6b6b" }}>
+                    <p className="text-xs" style={{ color: "var(--muted)" }}>
                       Last updated{" "}
                       {formatDistanceToNow(new Date(profile.updatedAt), { addSuffix: true })}
                     </p>
@@ -281,9 +277,9 @@ export default function ProfilePage() {
                   <button
                     onClick={() => fileRef.current?.click()}
                     className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-colors shrink-0"
-                    style={{ background: "#1a1a1a", border: "1px solid #2a2a2a", color: "#6b6b6b" }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#f0ede8"; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#6b6b6b"; }}
+                    style={{ background: "var(--surface-elevated)", border: "1px solid var(--border-strong)", color: "var(--muted)" }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--foreground)"; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--muted)"; }}
                   >
                     <RefreshCw size={11} />
                     Replace
@@ -295,18 +291,18 @@ export default function ProfilePage() {
             {/* Change password row — credentials users only */}
             {hasPassword && (
               <>
-                <div style={{ height: 1, background: "#1f1f1f" }} />
+                <div style={{ height: 1, background: "var(--border)" }} />
                 <div className="flex items-center justify-between px-5 py-3">
                   <div className="flex items-center gap-2.5">
-                    <Lock size={13} style={{ color: "#6b6b6b" }} />
-                    <span className="text-xs" style={{ color: "#6b6b6b" }}>Password</span>
+                    <Lock size={13} style={{ color: "var(--muted)" }} />
+                    <span className="text-xs" style={{ color: "var(--muted)" }}>Password</span>
                   </div>
                   <button
                     onClick={() => setPasswordModalOpen(true)}
                     className="text-xs transition-colors"
-                    style={{ background: "none", border: "none", cursor: "pointer", color: "#6b6b6b" }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#f0ede8"; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#6b6b6b"; }}
+                    style={{ background: "none", border: "none", cursor: "pointer", color: "var(--muted)" }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--foreground)"; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--muted)"; }}
                   >
                     Change password →
                   </button>
@@ -323,8 +319,8 @@ export default function ProfilePage() {
             onClick={() => !uploading && fileRef.current?.click()}
             className="relative rounded-xl flex flex-col items-center justify-center gap-4 p-10 cursor-pointer transition-all"
             style={{
-              border: `2px dashed ${dragOver ? "#f59e0b" : uploading ? "#2a2a2a" : "#1f1f1f"}`,
-              background: dragOver ? "#1a120008" : "#0d0d0d",
+              border: `2px dashed ${dragOver ? "var(--accent)" : uploading ? "var(--border-strong)" : "var(--border)"}`,
+              background: dragOver ? "color-mix(in srgb, var(--accent) 5%, transparent)" : "var(--surface-sunken)",
               minHeight: "180px",
             }}
           >
@@ -338,10 +334,10 @@ export default function ProfilePage() {
 
             {uploading ? (
               <>
-                <Loader2 size={28} className="spinner" style={{ color: "#f59e0b" }} />
+                <Loader2 size={28} className="spinner" style={{ color: "var(--accent)" }} />
                 <div className="text-center">
-                  <p className="text-sm font-medium" style={{ color: "#f0ede8" }}>Processing resume...</p>
-                  <p className="text-xs mt-1" style={{ color: "#6b6b6b" }}>Extracting text</p>
+                  <p className="text-sm font-medium" style={{ color: "var(--foreground)" }}>Processing resume...</p>
+                  <p className="text-xs mt-1" style={{ color: "var(--muted)" }}>Extracting text</p>
                 </div>
               </>
             ) : (
@@ -349,24 +345,24 @@ export default function ProfilePage() {
                 <div
                   className="w-12 h-12 rounded-xl flex items-center justify-center transition-colors"
                   style={{
-                    background: dragOver ? "#1a120020" : "#141414",
-                    border: `1px solid ${dragOver ? "#f59e0b44" : "#1f1f1f"}`,
+                    background: dragOver ? "color-mix(in srgb, var(--accent) 8%, transparent)" : "var(--surface-sunken)",
+                    border: `1px solid ${dragOver ? "color-mix(in srgb, var(--accent) 27%, transparent)" : "var(--border)"}`,
                   }}
                 >
-                  <Upload size={20} style={{ color: dragOver ? "#f59e0b" : "#6b6b6b" }} />
+                  <Upload size={20} style={{ color: dragOver ? "var(--accent)" : "var(--muted)" }} />
                 </div>
                 <div className="text-center">
-                  <p className="text-sm font-medium" style={{ color: "#f0ede8" }}>
+                  <p className="text-sm font-medium" style={{ color: "var(--foreground)" }}>
                     {profile ? "Replace resume" : "Upload your resume"}
                   </p>
-                  <p className="text-xs mt-1" style={{ color: "#6b6b6b" }}>PDF or DOCX — drop here or click to browse</p>
+                  <p className="text-xs mt-1" style={{ color: "var(--muted)" }}>PDF or DOCX — drop here or click to browse</p>
                 </div>
                 <div className="flex gap-2">
                   {["PDF", "DOCX"].map((fmt) => (
                     <span
                       key={fmt}
                       className="text-xs px-2.5 py-1 rounded-full font-mono"
-                      style={{ background: "#1a1a1a", border: "1px solid #2a2a2a", color: "#6b6b6b" }}
+                      style={{ background: "var(--surface-elevated)", border: "1px solid var(--border-strong)", color: "var(--muted)" }}
                     >
                       {fmt}
                     </span>
@@ -382,8 +378,8 @@ export default function ProfilePage() {
               className="mt-4 flex items-start gap-3 p-3 rounded-lg"
               style={{ background: "#1a050520", border: "1px solid #ef444433" }}
             >
-              <AlertCircle size={14} className="mt-0.5 shrink-0" style={{ color: "#ef4444" }} />
-              <p className="text-xs" style={{ color: "#ef4444" }}>{uploadResult.error}</p>
+              <AlertCircle size={14} className="mt-0.5 shrink-0" style={{ color: "var(--error)" }} />
+              <p className="text-xs" style={{ color: "var(--error)" }}>{uploadResult.error}</p>
             </div>
           )}
 
@@ -391,16 +387,16 @@ export default function ProfilePage() {
           {displayProfile && displayProfile.success && (
             <div
               className="mt-4 p-4 rounded-lg space-y-3"
-              style={{ background: "#111111", border: "1px solid #1f1f1f" }}
+              style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
             >
               <div className="flex items-center gap-2">
-                <CheckCircle2 size={14} style={{ color: "#22c55e" }} />
-                <span className="text-sm font-medium" style={{ color: "#f0ede8" }}>
+                <CheckCircle2 size={14} style={{ color: "var(--success)" }} />
+                <span className="text-sm font-medium" style={{ color: "var(--foreground)" }}>
                   {displayProfile.fileName}
                 </span>
               </div>
               {displayProfile.updatedAt && (
-                <p className="text-xs" style={{ color: "#6b6b6b" }}>
+                <p className="text-xs" style={{ color: "var(--muted)" }}>
                   Updated{" "}
                   {formatDistanceToNow(new Date(displayProfile.updatedAt), { addSuffix: true })}
                 </p>
@@ -408,9 +404,9 @@ export default function ProfilePage() {
               {displayProfile.preview && (
                 <div
                   className="p-3 rounded-lg"
-                  style={{ background: "#0d0d0d", border: "1px solid #161616" }}
+                  style={{ background: "var(--surface-sunken)", border: "1px solid var(--border)" }}
                 >
-                  <p className="text-xs font-mono leading-relaxed line-clamp-4" style={{ color: "#6b6b6b" }}>
+                  <p className="text-xs font-mono leading-relaxed line-clamp-4" style={{ color: "var(--muted)" }}>
                     {displayProfile.preview}{displayProfile.preview.length >= 200 ? "..." : ""}
                   </p>
                 </div>

@@ -38,18 +38,18 @@ export function SuggestionsModal({ job, onClose }: SuggestionsModalProps) {
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
         <div
           className="w-full max-w-2xl max-h-[90vh] flex flex-col rounded-xl pointer-events-auto animate-fade-in"
-          style={{ background: "#111111", border: "1px solid #1f1f1f" }}
+          style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
         >
           {/* Header */}
           <div
             className="flex items-start justify-between px-6 py-4 shrink-0"
-            style={{ borderBottom: "1px solid #1f1f1f" }}
+            style={{ borderBottom: "1px solid var(--border)" }}
           >
             <div>
-              <h2 className="font-semibold text-base" style={{ color: "#f0ede8" }}>
+              <h2 className="font-semibold text-base" style={{ color: "var(--foreground)" }}>
                 {job.companyName}
               </h2>
-              <p className="text-xs mt-0.5" style={{ color: "#6b6b6b" }}>
+              <p className="text-xs mt-0.5" style={{ color: "var(--muted)" }}>
                 {job.roleTitle}
               </p>
             </div>
@@ -67,7 +67,7 @@ export function SuggestionsModal({ job, onClose }: SuggestionsModalProps) {
               {/* ATS scores: before → after */}
               {job.atsScore !== null && (
                 <div className="flex items-center gap-1.5">
-                  <TrendingUp size={10} style={{ color: "#6b6b6b" }} />
+                  <TrendingUp size={10} style={{ color: "var(--muted)" }} />
                   <span
                     className="font-mono text-xs font-semibold px-2 py-0.5 rounded"
                     style={{
@@ -99,9 +99,9 @@ export function SuggestionsModal({ job, onClose }: SuggestionsModalProps) {
               <button
                 onClick={onClose}
                 className="p-1.5 rounded transition-colors"
-                style={{ color: "#6b6b6b" }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#f0ede8"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#6b6b6b"; }}
+                style={{ color: "var(--muted)" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--foreground)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--muted)"; }}
               >
                 <X size={16} />
               </button>
@@ -114,7 +114,7 @@ export function SuggestionsModal({ job, onClose }: SuggestionsModalProps) {
             {/* Keywords Found */}
             {keywordsFound.length > 0 && (
               <section>
-                <h3 className="text-xs font-mono uppercase tracking-wider mb-2" style={{ color: "#6b6b6b" }}>
+                <h3 className="text-xs font-mono uppercase tracking-wider mb-2" style={{ color: "var(--muted)" }}>
                   Keywords Matched
                 </h3>
                 <div className="flex flex-wrap gap-1.5">
@@ -134,7 +134,7 @@ export function SuggestionsModal({ job, onClose }: SuggestionsModalProps) {
             {/* Keywords Missing */}
             {keywordsMissing.length > 0 && (
               <section>
-                <h3 className="text-xs font-mono uppercase tracking-wider mb-2" style={{ color: "#6b6b6b" }}>
+                <h3 className="text-xs font-mono uppercase tracking-wider mb-2" style={{ color: "var(--muted)" }}>
                   Keywords Missing
                 </h3>
                 <div className="flex flex-wrap gap-1.5">
@@ -154,8 +154,8 @@ export function SuggestionsModal({ job, onClose }: SuggestionsModalProps) {
             {/* Easy Additions */}
             {easyAdditions.length > 0 && (
               <section>
-                <h3 className="text-xs font-mono uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ color: "#6b6b6b" }}>
-                  <ShieldCheck size={12} style={{ color: "#22c55e" }} />
+                <h3 className="text-xs font-mono uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ color: "var(--muted)" }}>
+                  <ShieldCheck size={12} style={{ color: "var(--success)" }} />
                   Easy Additions
                 </h3>
                 <div className="space-y-2">
@@ -165,8 +165,8 @@ export function SuggestionsModal({ job, onClose }: SuggestionsModalProps) {
                       className="flex items-start gap-2.5 p-3 rounded-lg"
                       style={{ background: "#052e1620", border: "1px solid #22c55e22" }}
                     >
-                      <span className="mt-0.5 w-1.5 h-1.5 rounded-full shrink-0" style={{ background: "#22c55e" }} />
-                      <p className="text-sm" style={{ color: "#c8c4be" }}>{item}</p>
+                      <span className="mt-0.5 w-1.5 h-1.5 rounded-full shrink-0" style={{ background: "var(--success)" }} />
+                      <p className="text-sm" style={{ color: "var(--foreground-subtle)" }}>{item}</p>
                     </div>
                   ))}
                 </div>
@@ -176,8 +176,8 @@ export function SuggestionsModal({ job, onClose }: SuggestionsModalProps) {
             {/* Risk Additions */}
             {riskAdditions.length > 0 && (
               <section>
-                <h3 className="text-xs font-mono uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ color: "#6b6b6b" }}>
-                  <ShieldAlert size={12} style={{ color: "#f59e0b" }} />
+                <h3 className="text-xs font-mono uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ color: "var(--muted)" }}>
+                  <ShieldAlert size={12} style={{ color: "var(--accent)" }} />
                   Risk Additions
                 </h3>
                 <div className="space-y-2">
@@ -187,8 +187,8 @@ export function SuggestionsModal({ job, onClose }: SuggestionsModalProps) {
                       className="flex items-start gap-2.5 p-3 rounded-lg"
                       style={{ background: "#1a140020", border: "1px solid #f59e0b22" }}
                     >
-                      <span className="mt-0.5 w-1.5 h-1.5 rounded-full shrink-0" style={{ background: "#f59e0b" }} />
-                      <p className="text-sm" style={{ color: "#c8c4be" }}>{item}</p>
+                      <span className="mt-0.5 w-1.5 h-1.5 rounded-full shrink-0" style={{ background: "var(--accent)" }} />
+                      <p className="text-sm" style={{ color: "var(--foreground-subtle)" }}>{item}</p>
                     </div>
                   ))}
                 </div>
@@ -198,7 +198,7 @@ export function SuggestionsModal({ job, onClose }: SuggestionsModalProps) {
             {/* Phrases to Update */}
             {phrasesToUpdate.length > 0 && (
               <section>
-                <h3 className="text-xs font-mono uppercase tracking-wider mb-2" style={{ color: "#6b6b6b" }}>
+                <h3 className="text-xs font-mono uppercase tracking-wider mb-2" style={{ color: "var(--muted)" }}>
                   Phrases to Update
                 </h3>
                 <div className="space-y-3">
@@ -206,17 +206,17 @@ export function SuggestionsModal({ job, onClose }: SuggestionsModalProps) {
                     <div
                       key={i}
                       className="p-4 rounded-lg space-y-3"
-                      style={{ background: "#0d0d0d", border: "1px solid #1f1f1f" }}
+                      style={{ background: "var(--surface-sunken)", border: "1px solid var(--border)" }}
                     >
                       <span
                         className="inline-block text-xs font-mono px-1.5 py-0.5 rounded"
-                        style={{ color: "#6b7280", background: "#1a1a1a" }}
+                        style={{ color: "var(--muted)", background: "var(--surface-elevated)" }}
                       >
                         {edit.section}
                       </span>
                       <div
                         className="p-2.5 rounded text-xs leading-relaxed line-through"
-                        style={{ color: "#6b6b6b", background: "#2a050510", border: "1px solid #ef444420" }}
+                        style={{ color: "var(--muted)", background: "#2a050510", border: "1px solid #ef444420" }}
                       >
                         {edit.original}
                       </div>
@@ -225,7 +225,7 @@ export function SuggestionsModal({ job, onClose }: SuggestionsModalProps) {
                       </div>
                       <div
                         className="p-2.5 rounded text-xs leading-relaxed"
-                        style={{ color: "#c8c4be", background: "#052e1610", border: "1px solid #22c55e20" }}
+                        style={{ color: "var(--foreground-subtle)", background: "#052e1610", border: "1px solid #22c55e20" }}
                       >
                         {edit.suggested}
                       </div>
@@ -239,7 +239,7 @@ export function SuggestionsModal({ job, onClose }: SuggestionsModalProps) {
             )}
 
             {keywordsFound.length === 0 && keywordsMissing.length === 0 && easyAdditions.length === 0 && riskAdditions.length === 0 && phrasesToUpdate.length === 0 && (
-              <p className="text-sm text-center py-12" style={{ color: "#6b6b6b" }}>
+              <p className="text-sm text-center py-12" style={{ color: "var(--muted)" }}>
                 No suggestions available yet.
               </p>
             )}

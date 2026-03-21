@@ -22,7 +22,7 @@ interface JobTableProps {
 
 function AtsScorePair({ before, after }: { before: number | null; after: number | null }) {
   if (before === null) {
-    return <span className="font-mono text-xs" style={{ color: "#3a3a3a" }}>—</span>;
+    return <span className="font-mono text-xs" style={{ color: "var(--border-strong)" }}>—</span>;
   }
   const colorFor = (n: number) => n >= 80 ? "#22c55e" : n >= 60 ? "#f59e0b" : "#ef4444";
   const bgFor    = (n: number) => n >= 80 ? "#052e1620" : n >= 60 ? "#431a0120" : "#2a050520";
@@ -37,7 +37,7 @@ function AtsScorePair({ before, after }: { before: number | null; after: number 
       </span>
       {after !== null && (
         <>
-          <ArrowRight size={10} style={{ color: "#3a3a3a" }} />
+          <ArrowRight size={10} style={{ color: "var(--border-strong)" }} />
           <span
             className="font-mono text-xs font-semibold px-1.5 py-0.5 rounded"
             style={{ color: colorFor(after), background: bgFor(after), border: `1px solid ${colorFor(after)}33` }}
@@ -53,7 +53,7 @@ function AtsScorePair({ before, after }: { before: number | null; after: number 
 function ProcessingBadge({ status }: { status: string }) {
   if (status === "processing") {
     return (
-      <span className="flex items-center gap-1.5 text-xs font-mono" style={{ color: "#f59e0b" }}>
+      <span className="flex items-center gap-1.5 text-xs font-mono" style={{ color: "var(--accent)" }}>
         <Loader2 size={12} className="spinner" />
         processing
       </span>
@@ -61,8 +61,8 @@ function ProcessingBadge({ status }: { status: string }) {
   }
   if (status === "error") {
     return (
-      <span className="flex items-center gap-1.5 text-xs font-mono" style={{ color: "#ef4444" }}>
-        <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#ef4444" }} />
+      <span className="flex items-center gap-1.5 text-xs font-mono" style={{ color: "var(--error)" }}>
+        <span className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--error)" }} />
         error
       </span>
     );
@@ -105,7 +105,7 @@ function AppStatusDropdown({
             key={s}
             value={s}
             disabled={AUTO_STATUSES.has(s)}
-            style={{ backgroundColor: "#111111", color: APPLICATION_STATUS_CONFIG[s].color }}
+            style={{ backgroundColor: "var(--surface)", color: APPLICATION_STATUS_CONFIG[s].color }}
           >
             {APPLICATION_STATUS_CONFIG[s].label}
           </option>
@@ -121,11 +121,11 @@ export function JobTable({ jobs, onViewSuggestions, onRetry, onStatusChange, onD
       <div className="flex flex-col items-center justify-center py-24 gap-4 animate-fade-in">
         <div
           className="w-16 h-16 rounded-2xl flex items-center justify-center"
-          style={{ background: "#111111", border: "1px solid #1f1f1f" }}
+          style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
         >
-          <FileText size={28} style={{ color: "#2a2a2a" }} />
+          <FileText size={28} style={{ color: "var(--border-strong)" }} />
         </div>
-        <p className="text-sm" style={{ color: "#6b6b6b" }}>
+        <p className="text-sm" style={{ color: "var(--muted)" }}>
           No applications yet. Add your first job.
         </p>
       </div>
@@ -138,14 +138,14 @@ export function JobTable({ jobs, onViewSuggestions, onRetry, onStatusChange, onD
   };
 
   return (
-    <div className="rounded-lg overflow-hidden" style={{ border: "1px solid #1f1f1f" }}>
+    <div className="rounded-lg overflow-hidden" style={{ border: "1px solid var(--border)" }}>
       {/* Table header */}
       <div
         className="grid text-xs font-mono uppercase tracking-wider px-4 py-3"
         style={{
-          color: "#6b6b6b",
-          borderBottom: "1px solid #1f1f1f",
-          background: "#0d0d0d",
+          color: "var(--muted)",
+          borderBottom: "1px solid var(--border)",
+          background: "var(--surface-sunken)",
           gridTemplateColumns: "2fr 1.4fr 1fr 0.8fr 0.8fr",
         }}
       >
@@ -163,16 +163,16 @@ export function JobTable({ jobs, onViewSuggestions, onRetry, onStatusChange, onD
           className="grid px-4 py-4 transition-colors"
           style={{
             gridTemplateColumns: "2fr 1.4fr 1fr 0.8fr 0.8fr",
-            borderBottom: i < jobs.length - 1 ? "1px solid #161616" : "none",
+            borderBottom: i < jobs.length - 1 ? "1px solid var(--surface-sunken)" : "none",
             background: "transparent",
           }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.background = "#0d0d0d"; }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.background = "var(--surface-sunken)"; }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.background = "transparent"; }}
         >
           {/* Company & Role */}
           <div className="flex flex-col justify-center min-w-0 pr-2 gap-0.5">
             <div className="flex items-center gap-1.5 min-w-0">
-              <span className="font-semibold text-sm truncate" style={{ color: "#f0ede8" }}>
+              <span className="font-semibold text-sm truncate" style={{ color: "var(--foreground)" }}>
                 {job.companyName}
               </span>
               {job.jobLink && (
@@ -180,23 +180,23 @@ export function JobTable({ jobs, onViewSuggestions, onRetry, onStatusChange, onD
                   onClick={() => handleJobLinkClick(job)}
                   title={job.applicationStatus === "ready_to_apply" ? "Open & mark as Applied" : "Open job link"}
                   className="shrink-0 transition-colors"
-                  style={{ color: "#3a3a3a" }}
+                  style={{ color: "var(--border-strong)" }}
                   onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#60a5fa"; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#3a3a3a"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--border-strong)"; }}
                 >
                   <ExternalLink size={11} />
                 </button>
               )}
             </div>
-            <span className="text-xs truncate" style={{ color: "#6b6b6b" }}>
+            <span className="text-xs truncate" style={{ color: "var(--muted)" }}>
               {job.roleTitle}
             </span>
             {job.appliedAt ? (
-              <span className="text-xs font-mono" style={{ color: "#3a3a3a" }}>
+              <span className="text-xs font-mono" style={{ color: "var(--border-strong)" }}>
                 applied {formatDistanceToNow(new Date(job.appliedAt), { addSuffix: true })}
               </span>
             ) : (
-              <span className="text-xs font-mono" style={{ color: "#2a2a2a" }}>
+              <span className="text-xs font-mono" style={{ color: "var(--border)" }}>
                 not applied yet
               </span>
             )}
@@ -217,10 +217,10 @@ export function JobTable({ jobs, onViewSuggestions, onRetry, onStatusChange, onD
             {job.status !== "done" ? (
               <ProcessingBadge status={job.status} />
             ) : (
-              <span className="flex items-center gap-1 text-xs font-mono" style={{ color: "#22c55e" }}>
+              <span className="flex items-center gap-1 text-xs font-mono" style={{ color: "var(--success)" }}>
                 <span
                   className="w-1.5 h-1.5 rounded-full pulse-dot"
-                  style={{ backgroundColor: "#22c55e", boxShadow: "0 0 4px #22c55e" }}
+                  style={{ backgroundColor: "var(--success)", boxShadow: "0 0 4px var(--success)" }}
                 />
                 done
               </span>
@@ -234,12 +234,12 @@ export function JobTable({ jobs, onViewSuggestions, onRetry, onStatusChange, onD
               disabled={job.status !== "done"}
               title="View AI suggestions"
               className="p-1.5 rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-              style={{ color: "#6b6b6b" }}
+              style={{ color: "var(--muted)" }}
               onMouseEnter={(e) => {
                 if (job.status === "done")
-                  (e.currentTarget as HTMLButtonElement).style.color = "#f0ede8";
+                  (e.currentTarget as HTMLButtonElement).style.color = "var(--foreground)";
               }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#6b6b6b"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--muted)"; }}
             >
               <Eye size={14} />
             </button>
@@ -249,9 +249,9 @@ export function JobTable({ jobs, onViewSuggestions, onRetry, onStatusChange, onD
                 onClick={() => onRetry(job.id)}
                 title="Retry analysis"
                 className="p-1.5 rounded transition-colors"
-                style={{ color: "#ef4444" }}
+                style={{ color: "var(--error)" }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#f87171"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#ef4444"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--error)"; }}
               >
                 <RefreshCw size={14} />
               </button>
@@ -261,9 +261,9 @@ export function JobTable({ jobs, onViewSuggestions, onRetry, onStatusChange, onD
               onClick={() => onDelete(job.id)}
               title="Delete application"
               className="p-1.5 rounded transition-colors"
-              style={{ color: "#3a3a3a" }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#ef4444"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#3a3a3a"; }}
+              style={{ color: "var(--border-strong)" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--error)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--border-strong)"; }}
             >
               <Trash2 size={14} />
             </button>

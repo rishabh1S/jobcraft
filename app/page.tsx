@@ -131,17 +131,17 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ background: "#080808" }}>
+    <div className="min-h-screen">
       <Navbar jobs={jobs} />
 
       <main className="pt-14 px-4 md:px-8 max-w-7xl mx-auto">
         <div className="pt-8 pb-10">
           <div className="flex items-start justify-between mb-6">
             <div>
-              <h1 className="text-xl font-semibold tracking-tight" style={{ color: "#f0ede8" }}>
+              <h1 className="text-xl font-semibold tracking-tight" style={{ color: "var(--foreground)" }}>
                 Applications
               </h1>
-              <p className="text-sm mt-1" style={{ color: "#6b6b6b" }}>
+              <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>
                 Track and tailor your job applications with AI
               </p>
             </div>
