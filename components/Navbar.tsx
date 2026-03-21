@@ -25,7 +25,7 @@ export function Navbar({ jobs = [] }: NavbarProps) {
     >
       {/* Logo */}
       <Link href="/" className="flex items-center gap-2.5 group">
-        <span className="font-semibold text-sm tracking-tight" style={{ color: "var(--foreground)" }}>
+        <span className="font-mono font-semibold text-sm tracking-tight" style={{ color: "var(--foreground)" }}>
           JobCraft
         </span>
       </Link>
