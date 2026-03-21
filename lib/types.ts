@@ -39,10 +39,18 @@ export interface Job {
 
 export interface Profile {
   id: string;
+  userId: string;
   resumeText: string;
   fileName: string;
   updatedAt: string;
   createdAt: string;
+}
+
+export interface AuthUser {
+  id: string;
+  name: string | null;
+  email: string | null;
+  image: string | null;
 }
 
 export const APPLICATION_STATUS_CONFIG: Record<

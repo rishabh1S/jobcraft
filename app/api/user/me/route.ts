@@ -9,12 +9,14 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const profile = await prisma.profile.findUnique({
-      where: { userId: session.user.id },
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { password: true },
     });
-    return NextResponse.json({ profile });
+
+    return NextResponse.json({ hasPassword: !!user?.password });
   } catch (error) {
-    console.error("GET /api/profile error:", error);
-    return NextResponse.json({ error: "Failed to fetch profile" }, { status: 500 });
+    console.error("GET /api/user/me error:", error);
+    return NextResponse.json({ error: "Failed to fetch user." }, { status: 500 });
   }
 }

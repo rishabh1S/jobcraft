@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback } from "react";
 import useSWR from "swr";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import {
   ArrowLeft,
   Upload,
@@ -15,10 +16,15 @@ import {
 import { Profile } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 import toast from "react-hot-toast";
+import { Avatar } from "@/components/Avatar";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 export default function ProfilePage() {
+  const { data: session, update: updateSession } = useSession();
+  const user = session?.user;
+
+  // Resume upload state
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [uploadResult, setUploadResult] = useState<{
@@ -28,11 +34,23 @@ export default function ProfilePage() {
     updatedAt?: string;
     error?: string;
   } | null>(null);
-
   const fileRef = useRef<HTMLInputElement>(null);
 
+  // Name editing state
+  const [editingName, setEditingName] = useState(false);
+  const [nameValue, setNameValue] = useState(user?.name ?? "");
+  const [nameSaving, setNameSaving] = useState(false);
+
+  // Password change state
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [passwordSaving, setPasswordSaving] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
+
   const { data, mutate } = useSWR<{ profile: Profile | null }>("/api/profile", fetcher);
+  const { data: meData } = useSWR<{ hasPassword: boolean }>("/api/user/me", fetcher);
   const profile = data?.profile ?? null;
+  const hasPassword = meData?.hasPassword ?? false;
 
   const handleFile = useCallback(
     async (file: File) => {
@@ -85,12 +103,80 @@ export default function ProfilePage() {
     e.target.value = "";
   };
 
+  async function handleSaveName() {
+    if (!nameValue.trim() || nameValue.trim() === user?.name) {
+      setEditingName(false);
+      return;
+    }
+    setNameSaving(true);
+    try {
+      const res = await fetch("/api/user", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: nameValue }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || "Failed to update name.");
+      } else {
+        await updateSession({ name: data.user.name });
+        toast.success("Name updated.");
+        setEditingName(false);
+      }
+    } catch {
+      toast.error("Something went wrong.");
+    } finally {
+      setNameSaving(false);
+    }
+  }
+
+  async function handleChangePassword(e: React.FormEvent) {
+    e.preventDefault();
+    setPasswordError("");
+    if (newPassword.length < 8) {
+      setPasswordError("New password must be at least 8 characters.");
+      return;
+    }
+    setPasswordSaving(true);
+    try {
+      const res = await fetch("/api/user/password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setPasswordError(data.error || "Failed to update password.");
+      } else {
+        toast.success("Password updated.");
+        setCurrentPassword("");
+        setNewPassword("");
+      }
+    } catch {
+      setPasswordError("Something went wrong.");
+    } finally {
+      setPasswordSaving(false);
+    }
+  }
+
   const displayProfile = uploadResult?.success ? uploadResult : profile ? {
     success: true,
     fileName: profile.fileName,
     preview: profile.resumeText.slice(0, 200),
     updatedAt: profile.updatedAt,
   } : null;
+
+  const inputStyle: React.CSSProperties = {
+    width: "100%",
+    padding: "9px 12px",
+    background: "#0d0d0d",
+    border: "1px solid #2a2a2a",
+    borderRadius: 8,
+    color: "#f0ede8",
+    fontSize: 14,
+    outline: "none",
+    boxSizing: "border-box",
+  };
 
   return (
     <div className="min-h-screen" style={{ background: "#080808" }}>
@@ -128,11 +214,140 @@ export default function ProfilePage() {
             Back to dashboard
           </Link>
 
-          {/* Header */}
-          <div className="mb-8">
+          {/* ── Account section ── */}
+          <div className="mb-10">
             <h1 className="text-xl font-semibold tracking-tight mb-1" style={{ color: "#f0ede8" }}>
-              Master Resume
+              Account
             </h1>
+            <p className="text-sm mb-6" style={{ color: "#6b6b6b" }}>
+              Your profile and settings.
+            </p>
+
+            <div
+              className="p-5 rounded-xl space-y-5"
+              style={{ background: "#111111", border: "1px solid #1f1f1f" }}
+            >
+              {/* Avatar + name + email */}
+              <div className="flex items-center gap-4">
+                <Avatar name={user?.name} image={user?.image} size={52} />
+                <div className="flex-1 min-w-0">
+                  {editingName ? (
+                    <div className="flex items-center gap-2">
+                      <input
+                        value={nameValue}
+                        onChange={(e) => setNameValue(e.target.value)}
+                        style={{ ...inputStyle, padding: "6px 10px", fontSize: 13 }}
+                        onFocus={(e) => { e.target.style.borderColor = "#f59e0b66"; }}
+                        onBlur={(e) => { e.target.style.borderColor = "#2a2a2a"; }}
+                        autoFocus
+                        onKeyDown={(e) => { if (e.key === "Enter") handleSaveName(); if (e.key === "Escape") setEditingName(false); }}
+                      />
+                      <button
+                        onClick={handleSaveName}
+                        disabled={nameSaving}
+                        style={{
+                          padding: "6px 12px",
+                          borderRadius: 6,
+                          background: "#1DB954",
+                          color: "#000",
+                          fontSize: 12,
+                          fontWeight: 600,
+                          border: "none",
+                          cursor: "pointer",
+                          whiteSpace: "nowrap",
+                          opacity: nameSaving ? 0.7 : 1,
+                        }}
+                      >
+                        {nameSaving ? "Saving…" : "Save"}
+                      </button>
+                      <button
+                        onClick={() => { setEditingName(false); setNameValue(user?.name ?? ""); }}
+                        style={{ fontSize: 12, color: "#6b6b6b", background: "none", border: "none", cursor: "pointer" }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium truncate" style={{ color: "#f0ede8" }}>
+                        {user?.name ?? "—"}
+                      </p>
+                      <button
+                        onClick={() => { setEditingName(true); setNameValue(user?.name ?? ""); }}
+                        style={{ fontSize: 11, color: "#6b6b6b", background: "none", border: "none", cursor: "pointer" }}
+                        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#f0ede8"; }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#6b6b6b"; }}
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  )}
+                  <p className="text-xs mt-0.5 truncate" style={{ color: "#6b6b6b" }}>
+                    {user?.email}
+                  </p>
+                </div>
+              </div>
+
+              {/* Password change — credentials users only */}
+              {hasPassword && (
+                <div style={{ borderTop: "1px solid #1f1f1f", paddingTop: 16 }}>
+                  <p className="text-xs font-medium mb-3" style={{ color: "#6b6b6b" }}>
+                    Change password
+                  </p>
+                  <form onSubmit={handleChangePassword} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    <input
+                      type="password"
+                      placeholder="Current password"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      required
+                      style={{ ...inputStyle, fontSize: 13 }}
+                      onFocus={(e) => { e.target.style.borderColor = "#f59e0b66"; }}
+                      onBlur={(e) => { e.target.style.borderColor = "#2a2a2a"; }}
+                    />
+                    <input
+                      type="password"
+                      placeholder="New password (min 8 chars)"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      required
+                      style={{ ...inputStyle, fontSize: 13 }}
+                      onFocus={(e) => { e.target.style.borderColor = "#f59e0b66"; }}
+                      onBlur={(e) => { e.target.style.borderColor = "#2a2a2a"; }}
+                    />
+                    {passwordError && (
+                      <p style={{ fontSize: 12, color: "#ef4444", margin: 0 }}>{passwordError}</p>
+                    )}
+                    <button
+                      type="submit"
+                      disabled={passwordSaving}
+                      className="flex items-center justify-center gap-2"
+                      style={{
+                        padding: "8px 0",
+                        borderRadius: 8,
+                        background: "#1a1a1a",
+                        border: "1px solid #2a2a2a",
+                        color: "#f0ede8",
+                        fontSize: 13,
+                        fontWeight: 500,
+                        cursor: passwordSaving ? "not-allowed" : "pointer",
+                        opacity: passwordSaving ? 0.7 : 1,
+                      }}
+                    >
+                      {passwordSaving && <Loader2 size={12} className="spinner" />}
+                      Update password
+                    </button>
+                  </form>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* ── Master Resume section ── */}
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold tracking-tight mb-1" style={{ color: "#f0ede8" }}>
+              Master Resume
+            </h2>
             <p className="text-sm" style={{ color: "#6b6b6b" }}>
               Your base resume. Every application tailors from this.
             </p>

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 
 async function extractTextFromPDF(buffer: Buffer): Promise<string> {
   // Use internal path to avoid Next.js module resolution issues with test-file loading
@@ -32,6 +33,12 @@ function cleanText(text: string): string {
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const userId = session.user.id;
+
     const formData = await request.formData();
     const file = formData.get("resumeFile") as File | null;
 
@@ -81,9 +88,9 @@ export async function POST(request: NextRequest) {
     const fileExt = ext;
 
     const profile = await prisma.profile.upsert({
-      where: { id: "singleton" },
+      where: { userId },
       update: { resumeText, fileName, fileBuffer, fileExt },
-      create: { id: "singleton", resumeText, fileName, fileBuffer, fileExt },
+      create: { userId, resumeText, fileName, fileBuffer, fileExt },
     });
 
     return NextResponse.json({

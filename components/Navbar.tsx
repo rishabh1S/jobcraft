@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
 import { Job } from "@/lib/types";
+import { Avatar } from "@/components/Avatar";
 
 interface NavbarProps {
   jobs?: Job[];
@@ -11,7 +13,9 @@ interface NavbarProps {
 
 export function Navbar({ jobs = [], onNewApplication }: NavbarProps) {
   const pathname = usePathname();
+  const { data: session } = useSession();
   const activeCount = jobs.filter((j) => j.status === "processing").length;
+  const user = session?.user;
 
   return (
     <nav
@@ -57,16 +61,6 @@ export function Navbar({ jobs = [], onNewApplication }: NavbarProps) {
           </span>
         )}
 
-        <Link
-          href="/profile"
-          className="text-sm transition-colors"
-          style={{
-            color: pathname === "/profile" ? "#f0ede8" : "#6b6b6b",
-          }}
-        >
-          Profile
-        </Link>
-
         {pathname === "/" && onNewApplication && (
           <button
             onClick={onNewApplication}
@@ -78,6 +72,23 @@ export function Navbar({ jobs = [], onNewApplication }: NavbarProps) {
           >
             New Application
           </button>
+        )}
+
+        {user && (
+          <div className="flex items-center gap-3">
+            <Link href="/profile" style={{ display: "flex", alignItems: "center" }}>
+              <Avatar name={user.name} image={user.image} size={28} />
+            </Link>
+            <button
+              onClick={() => signOut({ callbackUrl: "/auth" })}
+              className="text-xs transition-colors"
+              style={{ color: "#6b6b6b" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#f0ede8"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#6b6b6b"; }}
+            >
+              Sign out
+            </button>
+          </div>
         )}
       </div>
     </nav>

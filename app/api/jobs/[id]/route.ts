@@ -1,14 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const { id } = await params;
     const job = await prisma.job.findUnique({ where: { id } });
     if (!job) return NextResponse.json({ error: "Job not found" }, { status: 404 });
+    if (job.userId !== session.user.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
     return NextResponse.json({ job });
   } catch (error) {
     console.error("GET /api/jobs/[id] error:", error);
@@ -21,6 +29,10 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const { id } = await params;
     const body = await request.json();
     const { applicationStatus } = body;
@@ -31,6 +43,12 @@ export async function PATCH(
     ];
     if (!valid.includes(applicationStatus)) {
       return NextResponse.json({ error: "Invalid applicationStatus" }, { status: 400 });
+    }
+
+    const existing = await prisma.job.findUnique({ where: { id } });
+    if (!existing) return NextResponse.json({ error: "Job not found" }, { status: 404 });
+    if (existing.userId !== session.user.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const job = await prisma.job.update({
@@ -53,7 +71,16 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const { id } = await params;
+    const existing = await prisma.job.findUnique({ where: { id } });
+    if (!existing) return NextResponse.json({ error: "Job not found" }, { status: 404 });
+    if (existing.userId !== session.user.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
     await prisma.job.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (error) {

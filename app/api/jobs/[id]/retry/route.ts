@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 
 export async function POST(
   _request: NextRequest,
@@ -8,9 +9,17 @@ export async function POST(
   const { id } = await params;
 
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const job = await prisma.job.findUnique({ where: { id } });
     if (!job) {
       return NextResponse.json({ error: "Job not found" }, { status: 404 });
+    }
+    if (job.userId !== session.user.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     await prisma.job.update({

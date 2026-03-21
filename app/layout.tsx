@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "react-hot-toast";
+import { SessionProviderWrapper } from "@/components/SessionProviderWrapper";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -29,6 +30,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col" style={{ background: "#080808" }}>
+        <SessionProviderWrapper>
         {children}
         <Toaster
           position="bottom-right"
@@ -48,6 +50,7 @@ export default function RootLayout({
             },
           }}
         />
+        </SessionProviderWrapper>
       </body>
     </html>
   );

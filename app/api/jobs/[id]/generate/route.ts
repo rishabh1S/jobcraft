@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 import Groq from "groq-sdk";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
@@ -11,13 +12,22 @@ export async function POST(
   const { id } = await params;
 
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const userId = session.user.id;
+
     const job = await prisma.job.findUnique({ where: { id } });
     if (!job) {
       return NextResponse.json({ error: "Job not found" }, { status: 404 });
     }
+    if (job.userId !== userId) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
     const profile = await prisma.profile.findUnique({
-      where: { id: "singleton" },
+      where: { userId },
     });
     if (!profile) {
       return NextResponse.json(
