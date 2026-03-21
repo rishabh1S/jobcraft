@@ -1,7 +1,10 @@
 # JobCraft — AI Resume Tailor
 
 Track job applications and get AI-powered resume suggestions tailored to each job description.
- ![JobCraft Dashboard](./public/dashboard.png)
+
+<p align="center">
+  <img src="./public/dashboard.png" alt="JobCraft Dashboard" width="900" />
+</p>
 
 ## What it does
 
@@ -10,9 +13,12 @@ Track job applications and get AI-powered resume suggestions tailored to each jo
 - See exactly which **keywords are matched / missing**
 - Receive **easy additions** (low-risk, you already know them) and **risk additions** (gaps you'd need to genuinely fill)
 - Get **specific phrase rewrites** for weak bullet points — verbatim originals with improved versions
+- Generate a **cover letter** tailored to the role — formatted as a formal letter, human tone, 200-250 words
 - Track each application through its lifecycle: **Ready to Apply → Applied → Received Revert → Interviewing → Selected / Rejected**
 - Auto-ghosts applications that stay in "Applied" for more than 7 days with no update
 - Click a job link to open it and auto-mark as Applied in one action
+- **Light & dark mode** with full theme support
+- Sign in with **Google or GitHub** via OAuth
 
 
 ## Tech stack
@@ -23,6 +29,7 @@ Track job applications and get AI-powered resume suggestions tailored to each jo
 | Styling | Tailwind CSS v4 |
 | Database | PostgreSQL via NeonDB |
 | ORM | Prisma v7 (adapter pattern with `@prisma/adapter-pg`) |
+| Auth | Auth.js v5 (Google + GitHub OAuth) |
 | AI | Groq — `llama-3.3-70b-versatile` |
 | Resume parsing | `pdf-parse` v1 · `mammoth` (DOCX) |
 | Data fetching | SWR (live polling while AI is running) |
@@ -44,6 +51,7 @@ app/
       [id]/
         route.ts                # GET · PATCH (status) · DELETE
         generate/route.ts       # POST — triggers Groq AI analysis
+        cover-letter/route.ts   # POST — generates cover letter on demand
         retry/route.ts          # POST — re-runs failed analysis
     profile/
       route.ts                  # GET profile
@@ -55,11 +63,15 @@ components/
   JobTable.tsx                  # Main applications table
   NewApplicationSheet.tsx       # Slide-in new job form (4k char limit)
   SuggestionsModal.tsx          # AI results: keywords, phrases, additions
+  CoverLetterModal.tsx          # Cover letter preview + copy / generate
   ConfirmDeleteModal.tsx
 
 lib/
   prisma.ts                     # Prisma client (PrismaPg adapter)
   types.ts                      # Job, Profile, ApplicationStatus types
+  prompts/
+    resume-analysis.ts          # System + user prompts for ATS analysis
+    cover-letter.ts             # System + user prompts for cover letters
 
 prisma/
   schema.prisma
@@ -93,8 +105,8 @@ GROQ_API_KEY=gsk_...              # Free API key: https://console.groq.com
 ### 3. Push the database schema
 
 ```bash
-npx prisma db push
-npx prisma generate
+yarn prisma db push
+yarn prisma generate
 ```
 
 ### 4. Run locally
@@ -110,11 +122,12 @@ Open [http://localhost:3000](http://localhost:3000).
 
 1. Go to **/profile** and upload your master resume (PDF or DOCX)
 2. Click **New Application** on the dashboard
-3. Paste the job description (max 4,000 chars) and optionally add the job URL
+3. Paste the job description (max 4,000 chars), optionally add the job URL, and check "Also generate a cover letter" if you want one
 4. AI analysis runs in the background — the row polls automatically until complete
-5. Click the **eye icon** to open the suggestions panel
-6. When ready to apply, click the **external link icon** next to the company name — opens the job URL and auto-sets status to "Applied"
-7. Update the application status dropdown as you progress
+5. Click the **eye icon** to open the suggestions panel (ATS score, keywords, phrase rewrites)
+6. Click the **mail icon** to view or generate a cover letter — copy it with one click
+7. When ready to apply, click the **external link icon** next to the company name — opens the job URL and auto-sets status to "Applied"
+8. Update the application status dropdown as you progress
 
 
 ## Application status flow
