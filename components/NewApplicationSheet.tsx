@@ -183,7 +183,7 @@ export function NewApplicationSheet({
             onClick={handleSubmit}
             disabled={!profile || submitting || !jobDescription.trim()}
             className="w-full py-3 rounded-lg font-semibold text-sm transition-all active:scale-98 disabled:opacity-40 disabled:cursor-not-allowed"
-            style={{ background: "#f59e0b", color: "#080808" }}
+            style={{ background: "#1DB954", color: "#000000" }}
           >
             {submitting ? "Adding..." : "Tailor & Track →"}
           </button>

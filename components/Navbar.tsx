@@ -72,8 +72,8 @@ export function Navbar({ jobs = [], onNewApplication }: NavbarProps) {
             onClick={onNewApplication}
             className="text-sm font-medium px-4 py-1.5 rounded-full transition-all active:scale-95"
             style={{
-              background: "#f0ede8",
-              color: "#0a0a0a",
+              background: "#1DB954",
+              color: "#000000",
             }}
           >
             New Application
