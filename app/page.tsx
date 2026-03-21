@@ -1,65 +1,178 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState, useCallback } from "react";
+import useSWR from "swr";
+import { Job, ApplicationStatus, Profile } from "@/lib/types";
+import { Navbar } from "@/components/Navbar";
+import { StatsRow } from "@/components/StatsRow";
+import { JobTable } from "@/components/JobTable";
+import { NewApplicationSheet } from "@/components/NewApplicationSheet";
+import { SuggestionsModal } from "@/components/SuggestionsModal";
+import { ConfirmDeleteModal } from "@/components/ConfirmDeleteModal";
+import toast from "react-hot-toast";
+
+const fetcher = (url: string) => fetch(url).then((r) => r.json());
+
+export default function DashboardPage() {
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [suggestionsJob, setSuggestionsJob] = useState<Job | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Job | null>(null);
+
+  const { data: profileData } = useSWR<{ profile: Profile | null }>("/api/profile", fetcher);
+  const profile = profileData?.profile ?? null;
+
+  const { data: jobsData, mutate: mutateJobs } = useSWR<{ jobs: Job[] }>(
+    "/api/jobs",
+    fetcher,
+    {
+      refreshInterval: (data) => {
+        const jobs = data?.jobs ?? [];
+        return jobs.some((j) => j.status === "processing") ? 3000 : 0;
+      },
+    }
+  );
+  const jobs = jobsData?.jobs ?? [];
+
+  const handleJobCreated = useCallback(
+    async (jobId: string) => {
+      const stub: Job = {
+        id: jobId,
+        jobLink: null,
+        jobDescription: "",
+        companyName: "Processing...",
+        roleTitle: "Processing...",
+        status: "processing",
+        applicationStatus: "ready_to_apply",
+        appliedAt: null,
+        atsScore: null,
+        atsScoreAfter: null,
+        keywordsFound: null,
+        keywordsMissing: null,
+        easyAdditions: null,
+        riskAdditions: null,
+        phrasesToUpdate: null,
+        errorMessage: null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      await mutateJobs(
+        (prev) => ({ jobs: [stub, ...(prev?.jobs ?? [])] }),
+        { revalidate: true }
+      );
+    },
+    [mutateJobs]
+  );
+
+  const handleRetry = async (jobId: string) => {
+    try {
+      const res = await fetch(`/api/jobs/${jobId}/retry`, { method: "POST" });
+      if (!res.ok) {
+        const err = await res.json();
+        toast.error(err.error || "Retry failed");
+        return;
+      }
+      await mutateJobs();
+      toast.success("Retrying — analysis in progress");
+    } catch {
+      toast.error("Failed to retry");
+    }
+  };
+
+  const handleStatusChange = async (jobId: string, status: ApplicationStatus) => {
+    await mutateJobs(
+      (prev) => ({
+        jobs: (prev?.jobs ?? []).map((j) =>
+          j.id === jobId ? { ...j, applicationStatus: status } : j
+        ),
+      }),
+      { revalidate: false }
+    );
+    try {
+      const res = await fetch(`/api/jobs/${jobId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ applicationStatus: status }),
+      });
+      if (!res.ok) {
+        toast.error("Failed to update status");
+        await mutateJobs();
+      }
+    } catch {
+      toast.error("Failed to update status");
+      await mutateJobs();
+    }
+  };
+
+  const handleDelete = (jobId: string) => {
+    const job = jobs.find((j) => j.id === jobId) ?? null;
+    setDeleteTarget(job);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    const jobId = deleteTarget.id;
+    setDeleteTarget(null);
+    await mutateJobs(
+      (prev) => ({ jobs: (prev?.jobs ?? []).filter((j) => j.id !== jobId) }),
+      { revalidate: false }
+    );
+    try {
+      const res = await fetch(`/api/jobs/${jobId}`, { method: "DELETE" });
+      if (!res.ok) {
+        toast.error("Failed to delete application");
+        await mutateJobs();
+      } else {
+        toast.success("Application deleted");
+      }
+    } catch {
+      toast.error("Failed to delete");
+      await mutateJobs();
+    }
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+    <div className="min-h-screen" style={{ background: "#080808" }}>
+      <Navbar jobs={jobs} onNewApplication={() => setSheetOpen(true)} />
+
+      <main className="pt-14 px-4 md:px-8 max-w-7xl mx-auto">
+        <div className="pt-8 pb-10">
+          <div className="mb-6">
+            <h1 className="text-xl font-semibold tracking-tight" style={{ color: "#f0ede8" }}>
+              Applications
+            </h1>
+            <p className="text-sm mt-1" style={{ color: "#6b6b6b" }}>
+              Track and tailor your job applications with AI
+            </p>
+          </div>
+
+          <StatsRow jobs={jobs} />
+
+          <JobTable
+            jobs={jobs}
+            onViewSuggestions={setSuggestionsJob}
+            onRetry={handleRetry}
+            onStatusChange={handleStatusChange}
+            onDelete={handleDelete}
+          />
         </div>
       </main>
+
+      <NewApplicationSheet
+        open={sheetOpen}
+        profile={profile}
+        onClose={() => setSheetOpen(false)}
+        onJobCreated={handleJobCreated}
+      />
+
+      <SuggestionsModal job={suggestionsJob} onClose={() => setSuggestionsJob(null)} />
+
+      <ConfirmDeleteModal
+        open={deleteTarget !== null}
+        companyName={deleteTarget?.companyName ?? ""}
+        roleTitle={deleteTarget?.roleTitle ?? ""}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Profile {
+  id         String   @id @default(cuid())
+  resumeText String
+  fileName   String
+  fileBuffer String?
+  fileExt    String?
+  updatedAt  DateTime @updatedAt
+  createdAt  DateTime @default(now())
+}
+
+model Job {
+  id                String   @id @default(cuid())
+  jobLink           String?
+  jobDescription    String
+  companyName       String   @default("Processing...")
+  roleTitle         String   @default("Processing...")
+  status            String   @default("processing") // processing | done | error
+  applicationStatus String    @default("ready_to_apply") // ready_to_apply | applied | received_revert | interviewing | selected | rejected | ghosted
+  appliedAt         DateTime?
+  atsScore          Int?
+  atsScoreAfter     Int?
+  keywordsFound     String?  // JSON string[]
+  keywordsMissing   String?  // JSON string[]
+  easyAdditions     String?  // JSON string[] — low-risk improvements
+  riskAdditions     String?  // JSON string[] — skills in JD not in resume
+  phrasesToUpdate   String?  // JSON {section,original,suggested,reason}[]
+  errorMessage      String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
