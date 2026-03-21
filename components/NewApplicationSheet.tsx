@@ -21,12 +21,14 @@ export function NewApplicationSheet({
 }: NewApplicationSheetProps) {
   const [jobLink, setJobLink] = useState("");
   const [jobDescription, setJobDescription] = useState("");
+  const [generateCoverLetter, setGenerateCoverLetter] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (!open) {
       setJobLink("");
       setJobDescription("");
+      setGenerateCoverLetter(false);
       setSubmitting(false);
     }
   }, [open]);
@@ -53,7 +55,11 @@ export function NewApplicationSheet({
       onJobCreated(jobId);
       onClose();
       toast.success("Job added — tailoring in progress");
-      fetch(`/api/jobs/${jobId}/generate`, { method: "POST" }).catch(console.error);
+      fetch(`/api/jobs/${jobId}/generate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ generateCoverLetter }),
+      }).catch(console.error);
     } catch {
       toast.error("Something went wrong");
     } finally {
@@ -163,7 +169,7 @@ export function NewApplicationSheet({
               value={jobDescription}
               onChange={(e) => setJobDescription(e.target.value.slice(0, 4000))}
               placeholder="Paste the full job description here..."
-              rows={8}
+              rows={12}
               required
               className="w-full rounded-lg px-3 py-2.5 text-sm outline-none transition-colors resize-none"
               style={{
@@ -175,6 +181,20 @@ export function NewApplicationSheet({
               onBlur={(e) => { (e.target as HTMLTextAreaElement).style.borderColor = "var(--border)"; }}
             />
           </div>
+
+          {/* Cover letter checkbox */}
+          <label
+            className="flex items-center gap-2.5 cursor-pointer select-none"
+            style={{ color: "var(--muted)" }}
+          >
+            <input
+              type="checkbox"
+              checked={generateCoverLetter}
+              onChange={(e) => setGenerateCoverLetter(e.target.checked)}
+              style={{ accentColor: "var(--accent)", width: 14, height: 14, cursor: "pointer" }}
+            />
+            <span className="text-xs">Also generate a cover letter</span>
+          </label>
         </form>
 
         {/* Footer */}
@@ -183,7 +203,7 @@ export function NewApplicationSheet({
             onClick={handleSubmit}
             disabled={!profile || submitting || !jobDescription.trim()}
             className="w-full py-3 rounded-lg font-semibold text-sm transition-all active:scale-98 disabled:opacity-40 disabled:cursor-not-allowed"
-            style={{ background: "#1DB954", color: "#000000" }}
+            style={{ background: "#1DB954", color: "#ffffff" }}
           >
             {submitting ? "Adding..." : "Tailor & Track →"}
           </button>

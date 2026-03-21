@@ -9,6 +9,7 @@ import {
   Trash2,
   ExternalLink,
   ArrowRight,
+  Mail,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -18,6 +19,7 @@ interface JobTableProps {
   onRetry: (jobId: string) => void;
   onStatusChange: (jobId: string, status: ApplicationStatus) => void;
   onDelete: (jobId: string) => void;
+  onCoverLetter: (job: Job) => void;
 }
 
 function AtsScorePair({ before, after }: { before: number | null; after: number | null }) {
@@ -115,7 +117,7 @@ function AppStatusDropdown({
   );
 }
 
-export function JobTable({ jobs, onViewSuggestions, onRetry, onStatusChange, onDelete }: JobTableProps) {
+export function JobTable({ jobs, onViewSuggestions, onRetry, onStatusChange, onDelete, onCoverLetter }: JobTableProps) {
   if (jobs.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-4 animate-fade-in">
@@ -180,9 +182,9 @@ export function JobTable({ jobs, onViewSuggestions, onRetry, onStatusChange, onD
                   onClick={() => handleJobLinkClick(job)}
                   title={job.applicationStatus === "ready_to_apply" ? "Open & mark as Applied" : "Open job link"}
                   className="shrink-0 transition-colors"
-                  style={{ color: "var(--border-strong)" }}
+                  style={{ color: "var(--muted)" }}
                   onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#60a5fa"; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--border-strong)"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--muted)"; }}
                 >
                   <ExternalLink size={11} />
                 </button>
@@ -196,7 +198,7 @@ export function JobTable({ jobs, onViewSuggestions, onRetry, onStatusChange, onD
                 applied {formatDistanceToNow(new Date(job.appliedAt), { addSuffix: true })}
               </span>
             ) : (
-              <span className="text-xs font-mono" style={{ color: "var(--border)" }}>
+              <span className="text-xs font-mono" style={{ color: "var(--muted)" }}>
                 not applied yet
               </span>
             )}
@@ -244,6 +246,24 @@ export function JobTable({ jobs, onViewSuggestions, onRetry, onStatusChange, onD
               <Eye size={14} />
             </button>
 
+            <button
+              onClick={() => onCoverLetter(job)}
+              disabled={job.status !== "done"}
+              title={job.coverLetter ? "View cover letter" : "Generate cover letter"}
+              className="p-1.5 rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              style={{ color: job.coverLetter ? "var(--accent)" : "var(--muted)" }}
+              onMouseEnter={(e) => {
+                if (job.status === "done")
+                  (e.currentTarget as HTMLButtonElement).style.color = "var(--foreground)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.color =
+                  job.coverLetter ? "var(--accent)" : "var(--muted)";
+              }}
+            >
+              <Mail size={14} />
+            </button>
+
             {job.status === "error" && (
               <button
                 onClick={() => onRetry(job.id)}
@@ -261,9 +281,9 @@ export function JobTable({ jobs, onViewSuggestions, onRetry, onStatusChange, onD
               onClick={() => onDelete(job.id)}
               title="Delete application"
               className="p-1.5 rounded transition-colors"
-              style={{ color: "var(--border-strong)" }}
+              style={{ color: "var(--muted)" }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--error)"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--border-strong)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--muted)"; }}
             >
               <Trash2 size={14} />
             </button>

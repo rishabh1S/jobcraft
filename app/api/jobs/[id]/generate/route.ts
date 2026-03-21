@@ -2,14 +2,23 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import Groq from "groq-sdk";
+import { generateCoverLetter } from "@/app/api/jobs/[id]/cover-letter/route";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
+
+  let generateCoverLetterFlag = false;
+  try {
+    const body = await request.json();
+    generateCoverLetterFlag = !!body?.generateCoverLetter;
+  } catch {
+    // body is optional
+  }
 
   try {
     const session = await auth();
@@ -17,6 +26,7 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const userId = session.user.id;
+    const userName = session.user.name ?? "the candidate";
 
     const job = await prisma.job.findUnique({ where: { id } });
     if (!job) {
@@ -131,6 +141,22 @@ ${job.jobDescription}`;
         errorMessage: null,
       },
     });
+
+    // Optionally generate cover letter (non-blocking — failure doesn't affect job status)
+    if (generateCoverLetterFlag) {
+      try {
+        const coverLetter = await generateCoverLetter({
+          resumeText: profile.resumeText,
+          jobDescription: job.jobDescription,
+          companyName: parsed.companyName || job.companyName,
+          roleTitle: parsed.roleTitle || job.roleTitle,
+          userName,
+        });
+        await prisma.job.update({ where: { id }, data: { coverLetter } });
+      } catch (clErr) {
+        console.error(`Cover letter generation failed for job ${id}:`, clErr);
+      }
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

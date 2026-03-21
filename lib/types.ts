@@ -32,6 +32,7 @@ export interface Job {
   easyAdditions: string | null;
   riskAdditions: string | null;
   phrasesToUpdate: string | null;
+  coverLetter: string | null;
   errorMessage: string | null;
   createdAt: string;
   updatedAt: string;

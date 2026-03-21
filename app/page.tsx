@@ -9,6 +9,7 @@ import { JobTable } from "@/components/JobTable";
 import { NewApplicationSheet } from "@/components/NewApplicationSheet";
 import { SuggestionsModal } from "@/components/SuggestionsModal";
 import { ConfirmDeleteModal } from "@/components/ConfirmDeleteModal";
+import { CoverLetterModal } from "@/components/CoverLetterModal";
 import toast from "react-hot-toast";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
@@ -17,6 +18,7 @@ export default function DashboardPage() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [suggestionsJob, setSuggestionsJob] = useState<Job | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Job | null>(null);
+  const [coverLetterJob, setCoverLetterJob] = useState<Job | null>(null);
 
   const { data: profileData } = useSWR<{ profile: Profile | null }>("/api/profile", fetcher);
   const profile = profileData?.profile ?? null;
@@ -51,6 +53,7 @@ export default function DashboardPage() {
         easyAdditions: null,
         riskAdditions: null,
         phrasesToUpdate: null,
+        coverLetter: null,
         errorMessage: null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -148,7 +151,7 @@ export default function DashboardPage() {
             <button
               onClick={() => setSheetOpen(true)}
               className="text-sm font-medium px-4 py-2 rounded-full transition-all active:scale-95 shrink-0"
-              style={{ background: "#1DB954", color: "#000000" }}
+              style={{ background: "#1DB954", color: "#ffffff" }}
             >
               + New Application
             </button>
@@ -162,6 +165,7 @@ export default function DashboardPage() {
             onRetry={handleRetry}
             onStatusChange={handleStatusChange}
             onDelete={handleDelete}
+            onCoverLetter={setCoverLetterJob}
           />
         </div>
       </main>
@@ -174,6 +178,22 @@ export default function DashboardPage() {
       />
 
       <SuggestionsModal job={suggestionsJob} onClose={() => setSuggestionsJob(null)} />
+
+      <CoverLetterModal
+        job={coverLetterJob}
+        onClose={() => setCoverLetterJob(null)}
+        onGenerated={(jobId, text) => {
+          mutateJobs(
+            (prev) => ({
+              jobs: (prev?.jobs ?? []).map((j) =>
+                j.id === jobId ? { ...j, coverLetter: text } : j
+              ),
+            }),
+            { revalidate: false }
+          );
+          setCoverLetterJob((prev) => prev ? { ...prev, coverLetter: text } : prev);
+        }}
+      />
 
       <ConfirmDeleteModal
         open={deleteTarget !== null}
