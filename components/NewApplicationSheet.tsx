@@ -19,6 +19,8 @@ export function NewApplicationSheet({
   onClose,
   onJobCreated,
 }: NewApplicationSheetProps) {
+  const [companyName, setCompanyName] = useState("");
+  const [roleTitle, setRoleTitle] = useState("");
   const [jobLink, setJobLink] = useState("");
   const [jobDescription, setJobDescription] = useState("");
   const [generateCoverLetter, setGenerateCoverLetter] = useState(false);
@@ -26,6 +28,8 @@ export function NewApplicationSheet({
 
   useEffect(() => {
     if (!open) {
+      setCompanyName("");
+      setRoleTitle("");
       setJobLink("");
       setJobDescription("");
       setGenerateCoverLetter(false);
@@ -35,6 +39,14 @@ export function NewApplicationSheet({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!companyName.trim()) {
+      toast.error("Company name is required");
+      return;
+    }
+    if (!roleTitle.trim()) {
+      toast.error("Role title is required");
+      return;
+    }
     if (!jobDescription.trim()) {
       toast.error("Job description is required");
       return;
@@ -44,7 +56,7 @@ export function NewApplicationSheet({
       const res = await fetch("/api/jobs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobLink, jobDescription }),
+        body: JSON.stringify({ companyName, roleTitle, jobLink, jobDescription }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -133,6 +145,50 @@ export function NewApplicationSheet({
             </div>
           )}
 
+          {/* Company Name + Role Title row */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium" style={{ color: "var(--muted)" }}>
+                Company Name <span style={{ color: "var(--error)" }}>*</span>
+              </label>
+              <input
+                type="text"
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                placeholder="Acme Corp"
+                required
+                className="w-full rounded-lg px-3 py-2.5 text-sm outline-none transition-colors"
+                style={{
+                  background: "var(--surface-sunken)",
+                  border: "1px solid var(--border)",
+                  color: "var(--foreground)",
+                }}
+                onFocus={(e) => { (e.target as HTMLInputElement).style.borderColor = "color-mix(in srgb, var(--accent) 27%, transparent)"; }}
+                onBlur={(e) => { (e.target as HTMLInputElement).style.borderColor = "var(--border)"; }}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium" style={{ color: "var(--muted)" }}>
+                Job Title <span style={{ color: "var(--error)" }}>*</span>
+              </label>
+              <input
+                type="text"
+                value={roleTitle}
+                onChange={(e) => setRoleTitle(e.target.value)}
+                placeholder="Software Engineer"
+                required
+                className="w-full rounded-lg px-3 py-2.5 text-sm outline-none transition-colors"
+                style={{
+                  background: "var(--surface-sunken)",
+                  border: "1px solid var(--border)",
+                  color: "var(--foreground)",
+                }}
+                onFocus={(e) => { (e.target as HTMLInputElement).style.borderColor = "color-mix(in srgb, var(--accent) 27%, transparent)"; }}
+                onBlur={(e) => { (e.target as HTMLInputElement).style.borderColor = "var(--border)"; }}
+              />
+            </div>
+          </div>
+
           {/* Job URL */}
           <div className="space-y-1.5">
             <label className="text-xs font-medium" style={{ color: "var(--muted)" }}>
@@ -201,7 +257,7 @@ export function NewApplicationSheet({
         <div className="px-6 py-4" style={{ borderTop: "1px solid var(--border)" }}>
           <button
             onClick={handleSubmit}
-            disabled={!profile || submitting || !jobDescription.trim()}
+            disabled={!profile || submitting || !companyName.trim() || !roleTitle.trim() || !jobDescription.trim()}
             className="w-full py-3 rounded-lg font-semibold text-sm transition-all active:scale-98 disabled:opacity-40 disabled:cursor-not-allowed"
             style={{ background: "#1DB954", color: "#ffffff" }}
           >

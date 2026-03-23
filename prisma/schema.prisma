@@ -80,8 +80,8 @@ model Job {
   userId            String
   jobLink           String?
   jobDescription    String
-  companyName       String    @default("Processing...")
-  roleTitle         String    @default("Processing...")
+  companyName       String
+  roleTitle         String
   status            String    @default("processing") // processing | done | error
   applicationStatus String    @default("ready_to_apply") // ready_to_apply | applied | received_revert | interviewing | selected | rejected | ghosted
   appliedAt         DateTime?

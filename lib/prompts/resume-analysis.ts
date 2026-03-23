@@ -1,9 +1,7 @@
 export function getResumeAnalysisSystemPrompt(): string {
-  return `You are a senior technical resume consultant and ATS optimization expert.
-Your job is to do a THOROUGH line-by-line analysis of the candidate's resume against the job description.
-You must identify every meaningful improvement opportunity — weak bullet points, missing keywords, underrepresented skills.
-Never fabricate experience. Every suggestion must be grounded in what the resume already contains.
-Respond ONLY with a valid JSON object. No markdown, no explanation, no code fences.`;
+  return `You are an ATS resume analyst. Analyze resumes against job descriptions with precision.
+Never fabricate. All suggestions must reference content that actually exists in the resume.
+Respond ONLY with valid JSON. No markdown, no code fences, no explanation.`;
 }
 
 export function getResumeAnalysisUserPrompt({
@@ -13,46 +11,67 @@ export function getResumeAnalysisUserPrompt({
   resumeText: string;
   jobDescription: string;
 }): string {
-  return `Do a complete resume audit against this job description. Read every bullet point and every section of the resume carefully.
+  return `Analyze this resume against the job description. Follow these steps in order:
 
-Return this exact JSON structure:
+STEP 1 — Tier classification (internal scratch work, not in JSON output):
+Classify every JD requirement into three tiers:
+- coreRequirements (4–6 items): role-defining skills/experience — appears in the job title or mentioned 3+ times, or stated as must-have
+- supportingRequirements (4–6 items): clearly required but secondary — mentioned 1–2 times, tools, degree, years of experience
+- niceToHaveRequirements (2–4 items): implied or bonus — soft skills, familiarity, exposure
+
+STEP 2 — Semantic scoring per requirement (internal, not in JSON output):
+For each requirement across all tiers, assign a score:
+- 1.0 = resume directly and explicitly demonstrates this
+- 0.5 = resume implies it through adjacent or closely related work
+- 0.0 = no evidence whatsoever in the resume
+
+STEP 3 — Compute atsScore:
+core_avg = average of all core requirement scores
+supporting_avg = average of all supporting requirement scores
+nicetohave_avg = average of all nicetohave requirement scores
+atsScore = round(core_avg * 60 + supporting_avg * 30 + nicetohave_avg * 10)
+
+STEP 4 — Build keyword lists:
+keywordsFound: requirements scored 1.0 or 0.5 (resume demonstrates or implies them)
+keywordsMissing: requirements scored 0.0 (genuine gaps)
+
+STEP 5 — Phrase rewrites:
+Only look in Experience, Projects, and Summary/Overview sections (never Skills — keyword additions there are handled by easyAdditions/riskAdditions).
+Identify up to 5 bullets/sentences where a single rewrite would move a core or supporting requirement from 0.0/0.5 toward 1.0 by explicitly naming the relevant skill or domain. Skip bullets already well-aligned. Max 5.
+
+STEP 6 — Additions:
+easyAdditions (3–5): requirements the resume implies (scored 0.5) that could be made explicit with a small edit — name the exact resume section and which requirement it surfaces.
+riskAdditions (2–3): core requirements scored 0.0 that are genuine gaps — name the exact skill and be honest about the risk of adding it.
+
+STEP 7 — Projected score:
+atsScoreAfter = atsScore + (easyAdditions.length * 3) + (count of low-risk riskAdditions * 2)
+Cap at 95.
+
+Return this exact JSON:
 {
-  "companyName": "company name from JD, or 'Unknown Company'",
-  "roleTitle": "exact job title from JD",
-  "atsScore": <integer 0-100: honest current keyword match before any edits>,
-  "atsScoreAfter": <integer 0-100: realistic projected score after all suggestions applied>,
-  "keywordsFound": [
-    "every significant keyword/tool/skill/methodology from the JD that already appears in the resume"
-  ],
-  "keywordsMissing": [
-    "every important keyword from the JD that is absent from the resume (tools, frameworks, methodologies, soft skills)"
-  ],
-  "easyAdditions": [
-    "SPECIFIC actionable item — name the exact section and what to add. Example: 'Add "CI/CD" to your Skills section — the JD mentions it 5 times and your projects already use GitHub Actions which implies this skill'",
-    "Another specific easy win with section name and rationale..."
-  ],
-  "riskAdditions": [
-    "SPECIFIC gap — name the exact skill and why it's risky. Example: 'JD requires Terraform (mentioned 4 times) — not present anywhere in your resume; only add if you have genuine hands-on experience'",
-    "Another specific gap..."
-  ],
+  "atsScore": <integer>,
+  "atsScoreAfter": <integer>,
+  "keywordsFound": ["string"],
+  "keywordsMissing": ["string"],
+  "easyAdditions": ["string — exact section name + which JD requirement it surfaces"],
+  "riskAdditions": ["string — exact skill + honest gap note"],
   "phrasesToUpdate": [
     {
-      "section": "exact section name from resume (e.g. Experience, Projects, Summary)",
-      "original": "EXACT verbatim sentence or bullet point copied from the resume — do not paraphrase",
-      "suggested": "rewritten version that naturally weaves in JD keywords while keeping the same factual content",
-      "reason": "specific ATS/impact reason: which JD keywords this adds and why the new phrasing is stronger"
+      "section": "Experience | Projects | Summary (never Skills)",
+      "original": "verbatim bullet copied from resume — never paraphrase",
+      "suggested": "rewritten bullet that explicitly names the JD requirement without changing facts",
+      "reason": "which requirement this moves from 0.5→1.0 or 0.0→0.5 and why"
     }
   ]
 }
 
-IMPORTANT RULES:
-- phrasesToUpdate: scan EVERY bullet point across ALL experience and project entries. Target 6-12 phrases — prioritise bullets that are vague, use weak verbs, or miss obvious JD keywords. The "original" must be copied verbatim from the resume.
-- easyAdditions: provide 3-6 specific items with exact section names
-- riskAdditions: provide 2-4 items, be honest about severity
-- keywordsFound / keywordsMissing: be exhaustive — include tools, languages, frameworks, methodologies, and domain terms
-- atsScoreAfter should reflect a realistic improvement, not wishful thinking
+RULES:
+- phrasesToUpdate: max 5 entries, sourced only from Experience, Projects, or Summary/Overview sections. original must be verbatim — copy it exactly.
+- easyAdditions/riskAdditions: these cover Skills section additions — do not duplicate them in phrasesToUpdate.
+- atsScore must follow the tier-weighted formula in STEP 3. Do not guess or estimate independently.
+- A resume that only implies security experience (but lacks the core domain) should score lower on core, not equal to one that demonstrates it directly.
 
-Master Resume:
+Resume:
 ${resumeText}
 
 Job Description:

@@ -41,8 +41,14 @@ export async function POST(request: NextRequest) {
     const userId = session.user.id;
 
     const body = await request.json();
-    const { jobLink, jobDescription } = body;
+    const { companyName, roleTitle, jobLink, jobDescription } = body;
 
+    if (!companyName || !companyName.trim()) {
+      return NextResponse.json({ error: "Company name is required" }, { status: 400 });
+    }
+    if (!roleTitle || !roleTitle.trim()) {
+      return NextResponse.json({ error: "Role title is required" }, { status: 400 });
+    }
     if (!jobDescription || jobDescription.trim().length < 10) {
       return NextResponse.json(
         { error: "Job description is required" },
@@ -53,6 +59,8 @@ export async function POST(request: NextRequest) {
     const job = await prisma.job.create({
       data: {
         userId,
+        companyName: companyName.trim(),
+        roleTitle: roleTitle.trim(),
         jobLink: jobLink || null,
         jobDescription: jobDescription.trim(),
         status: "processing",

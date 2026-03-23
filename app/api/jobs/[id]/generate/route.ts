@@ -68,8 +68,6 @@ export async function POST(
     await prisma.job.update({
       where: { id },
       data: {
-        companyName: parsed.companyName || "Unknown Company",
-        roleTitle: parsed.roleTitle || "Unknown Role",
         atsScore: typeof parsed.atsScore === "number" ? parsed.atsScore : null,
         atsScoreAfter: typeof parsed.atsScoreAfter === "number" ? parsed.atsScoreAfter : null,
         keywordsFound: parsed.keywordsFound
@@ -98,8 +96,8 @@ export async function POST(
         const coverLetter = await generateCoverLetter({
           resumeText: profile.resumeText,
           jobDescription: job.jobDescription,
-          companyName: parsed.companyName || job.companyName,
-          roleTitle: parsed.roleTitle || job.roleTitle,
+          companyName: job.companyName,
+          roleTitle: job.roleTitle,
           userName,
         });
         await prisma.job.update({ where: { id }, data: { coverLetter } });
