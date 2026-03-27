@@ -25,11 +25,19 @@ export async function GET(request: NextRequest) {
 
     const rawPage = parseInt(request.nextUrl.searchParams.get("page") ?? "1", 10);
     const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
+    const search = request.nextUrl.searchParams.get("search")?.trim() ?? "";
+    const statusFilter = request.nextUrl.searchParams.get("status")?.trim() ?? "";
+
+    const where = {
+      userId,
+      ...(search ? { companyName: { contains: search, mode: "insensitive" as const } } : {}),
+      ...(statusFilter ? { applicationStatus: statusFilter } : {}),
+    };
 
     const [total, jobs] = await Promise.all([
-      prisma.job.count({ where: { userId } }),
+      prisma.job.count({ where }),
       prisma.job.findMany({
-        where: { userId },
+        where,
         orderBy: { createdAt: "desc" },
         skip: (page - 1) * PAGE_SIZE,
         take: PAGE_SIZE,

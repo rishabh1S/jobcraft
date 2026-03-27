@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import useSWR from "swr";
 import { Job, ApplicationStatus, Profile, PaginatedJobsResponse, JobStats } from "@/lib/types";
 import { Navbar } from "@/components/Navbar";
@@ -20,6 +20,17 @@ export default function DashboardPage() {
   const [deleteTarget, setDeleteTarget] = useState<Job | null>(null);
   const [coverLetterJob, setCoverLetterJob] = useState<Job | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchInput, setSearchInput] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setDebouncedSearch(searchInput);
+      setCurrentPage(1);
+    }, 300);
+    return () => clearTimeout(t);
+  }, [searchInput]);
 
   const { data: profileData } = useSWR<{ profile: Profile | null }>("/api/profile", fetcher);
   const profile = profileData?.profile ?? null;
@@ -32,8 +43,12 @@ export default function DashboardPage() {
     }
   );
 
+  const jobsParams = new URLSearchParams({ page: String(currentPage) });
+  if (debouncedSearch) jobsParams.set("search", debouncedSearch);
+  if (statusFilter) jobsParams.set("status", statusFilter);
+
   const { data: jobsData, mutate: mutateJobs } = useSWR<PaginatedJobsResponse>(
-    `/api/jobs?page=${currentPage}`,
+    `/api/jobs?${jobsParams}`,
     fetcher,
     {
       refreshInterval: (data) => {
@@ -159,6 +174,10 @@ export default function DashboardPage() {
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={setCurrentPage}
+            searchInput={searchInput}
+            onSearchChange={setSearchInput}
+            statusFilter={statusFilter}
+            onStatusFilterChange={(v) => { setStatusFilter(v); setCurrentPage(1); }}
             onViewSuggestions={setSuggestionsJob}
             onRetry={handleRetry}
             onStatusChange={handleStatusChange}
