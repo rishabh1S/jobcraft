@@ -37,7 +37,11 @@ keywordsMissing: requirements scored 0.0 (genuine gaps)
 
 STEP 5 — Phrase rewrites:
 Only look in Experience, Projects, and Summary/Overview sections (never Skills — keyword additions there are handled by easyAdditions/riskAdditions).
-Identify up to 5 bullets/sentences where a single rewrite would move a core or supporting requirement from 0.0/0.5 toward 1.0 by explicitly naming the relevant skill or domain. Skip bullets already well-aligned. Max 5.
+Go through EVERY bullet/sentence in the Experience and Projects sections. For each bullet, evaluate whether it needs rephrasing to better match the JD language, framing, or to surface a requirement it currently only implies.
+Include a bullet in phrasesToUpdate only if:
+  a) It scores 0.5 on a core/supporting requirement that could become 1.0 with a targeted rewrite, AND
+  b) The rewrite adds something genuinely new — do NOT rewrite a bullet just to append a skill/technology that is already explicitly named in that bullet. That is redundant and adds no value.
+Focus rewrites on: improving framing, adopting JD-specific terminology, surfacing implied experience more explicitly, or tightening language — not on keyword-stuffing skills already present.
 
 STEP 6 — Additions:
 easyAdditions (3–5): requirements the resume implies (scored 0.5) that could be made explicit with a small edit — name the exact resume section and which requirement it surfaces.
@@ -66,7 +70,8 @@ Return this exact JSON:
 }
 
 RULES:
-- phrasesToUpdate: max 5 entries, sourced only from Experience, Projects, or Summary/Overview sections. original must be verbatim — copy it exactly.
+- phrasesToUpdate: cover ALL bullets that need updating. Include only bullets where the rewrite meaningfully improves JD alignment. original must be verbatim — copy it exactly.
+- NEVER add a skill or technology to the suggested rewrite if that exact skill/technology is already explicitly named in the original bullet. Check the original carefully before adding any term.
 - easyAdditions/riskAdditions: these cover Skills section additions — do not duplicate them in phrasesToUpdate.
 - atsScore must follow the tier-weighted formula in STEP 3. Do not guess or estimate independently.
 - A resume that only implies security experience (but lacks the core domain) should score lower on core, not equal to one that demonstrates it directly.
