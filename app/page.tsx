@@ -58,7 +58,7 @@ export default function DashboardPage() {
     }
   );
   const jobs = jobsData?.jobs ?? [];
-  const totalPages = Math.ceil((jobsData?.total ?? 0) / (jobsData?.pageSize ?? 6));
+  const totalPages = Math.ceil((jobsData?.total ?? 0) / (jobsData?.pageSize ?? 8));
 
   const handleJobCreated = useCallback(
     async (_jobId: string) => {

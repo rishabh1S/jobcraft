@@ -75,7 +75,6 @@ export function JobTableHeader({
             style={{
               background: "var(--surface-elevated, var(--surface))",
               border: "1px solid var(--border)",
-              width: "max-content",
               boxShadow: "0 4px 16px rgba(0,0,0,0.4)",
             }}
           >

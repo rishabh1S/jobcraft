@@ -33,7 +33,7 @@ export async function GET() {
 
     return NextResponse.json({
       total,
-      readyToApply: c["ready_to_apply"] ?? 0,
+      receivedRevert: c["received_revert"] ?? 0,
       interviewing,
       selected,
       responded,

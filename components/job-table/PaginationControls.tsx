@@ -48,9 +48,10 @@ export function PaginationControls({
               onClick={() => onPageChange(item as number)}
               className="px-3 py-1 text-xs font-mono rounded transition-colors"
               style={{
-                color: item === currentPage ? "#ffffff" : "var(--foreground)",
-                background: item === currentPage ? "var(--accent)" : "transparent",
-                border: `1px solid ${item === currentPage ? "var(--accent)" : "var(--border)"}`,
+                color: item === currentPage ? "var(--foreground)" : "var(--muted)",
+                background: item === currentPage ? "var(--surface-elevated, var(--surface))" : "transparent",
+                border: `1px solid ${item === currentPage ? "var(--border-strong)" : "var(--border)"}`,
+                fontWeight: item === currentPage ? 600 : 400,
               }}
             >
               {item}

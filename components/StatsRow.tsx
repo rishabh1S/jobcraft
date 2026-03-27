@@ -8,7 +8,7 @@ interface StatsRowProps {
 
 export function StatsRow({ stats }: StatsRowProps) {
   const total        = stats?.total ?? 0;
-  const readyToApply = stats?.readyToApply ?? 0;
+  const receivedRevert = stats?.receivedRevert ?? 0;
   const interviewing = stats?.interviewing ?? 0;
   const selected     = stats?.selected ?? 0;
   const avgAtsBefore = stats?.avgAtsBefore ?? null;
@@ -30,7 +30,7 @@ export function StatsRow({ stats }: StatsRowProps) {
 
   const statsItems = [
     { label: "Total",          value: total.toString(),         highlight: null as string | null },
-    { label: "Ready to Apply", value: readyToApply.toString(),  highlight: readyToApply > 0 ? "cyan"   : null },
+    { label: "Received Revert", value: receivedRevert.toString(), highlight: receivedRevert > 0 ? "purple" : null },
     { label: "Interviewing",   value: interviewing.toString(),  highlight: interviewing > 0 ? "purple" : null },
     { label: "Selected",       value: selected.toString(),      highlight: selected > 0     ? "green"  : null },
   ];
@@ -100,7 +100,7 @@ export function StatsRow({ stats }: StatsRowProps) {
                   className="h-full rounded-full transition-all"
                   style={{
                     width: `${responseRate}%`,
-                    backgroundColor: responseRate >= 30 ? "#22c55e" : responseRate >= 15 ? "#f59e0b" : "#ef4444",
+                    backgroundColor: responseRate >= 30 ? "#22c55e" : responseRate >= 15 ? "#60a5fa" : "#ef4444",
                   }}
                 />
               </div>

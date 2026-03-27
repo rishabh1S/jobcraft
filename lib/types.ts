@@ -76,7 +76,7 @@ export interface PaginatedJobsResponse {
 
 export interface JobStats {
   total: number;
-  readyToApply: number;
+  receivedRevert: number;
   interviewing: number;
   selected: number;
   responded: number;
