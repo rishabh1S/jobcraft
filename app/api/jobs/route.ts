@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 
-export async function GET() {
+const PAGE_SIZE = 6;
+
+export async function GET(request: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
@@ -21,11 +23,20 @@ export async function GET() {
       data: { applicationStatus: "ghosted" },
     });
 
-    const jobs = await prisma.job.findMany({
-      where: { userId },
-      orderBy: { createdAt: "desc" },
-    });
-    return NextResponse.json({ jobs });
+    const rawPage = parseInt(request.nextUrl.searchParams.get("page") ?? "1", 10);
+    const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
+
+    const [total, jobs] = await Promise.all([
+      prisma.job.count({ where: { userId } }),
+      prisma.job.findMany({
+        where: { userId },
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * PAGE_SIZE,
+        take: PAGE_SIZE,
+      }),
+    ]);
+
+    return NextResponse.json({ jobs, total, page, pageSize: PAGE_SIZE });
   } catch (error) {
     console.error("GET /api/jobs error:", error);
     return NextResponse.json({ error: "Failed to fetch jobs" }, { status: 500 });

@@ -14,11 +14,89 @@ import { formatDistanceToNow } from "date-fns";
 
 interface JobTableProps {
   jobs: Job[];
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
   onViewSuggestions: (job: Job) => void;
   onRetry: (jobId: string) => void;
   onStatusChange: (jobId: string, status: ApplicationStatus) => void;
   onDelete: (jobId: string) => void;
   onCoverLetter: (job: Job) => void;
+}
+
+function PaginationControls({
+  currentPage,
+  totalPages,
+  onPageChange,
+}: {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}) {
+  if (totalPages <= 1) return null;
+
+  const pages = Array.from({ length: totalPages }, (_, i) => i + 1)
+    .filter((p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+    .reduce<(number | "...")[]>((acc, p, idx, arr) => {
+      if (idx > 0 && p - (arr[idx - 1] as number) > 1) acc.push("...");
+      acc.push(p);
+      return acc;
+    }, []);
+
+  return (
+    <div
+      className="flex items-center justify-between px-4 py-3"
+      style={{ borderTop: "1px solid var(--border)" }}
+    >
+      <span className="text-xs font-mono" style={{ color: "var(--muted)" }}>
+        Page {currentPage} of {totalPages}
+      </span>
+      <div className="flex items-center gap-1">
+        <button
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage <= 1}
+          className="px-3 py-1 text-xs font-mono rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          style={{ color: "var(--foreground)", border: "1px solid var(--border)" }}
+          onMouseEnter={(e) => { if (currentPage > 1) e.currentTarget.style.borderColor = "var(--border-strong)"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--border)"; }}
+        >
+          ← Prev
+        </button>
+
+        {pages.map((item, idx) =>
+          item === "..." ? (
+            <span key={`ellipsis-${idx}`} className="px-2 text-xs font-mono" style={{ color: "var(--muted)" }}>
+              …
+            </span>
+          ) : (
+            <button
+              key={item}
+              onClick={() => onPageChange(item as number)}
+              className="px-3 py-1 text-xs font-mono rounded transition-colors"
+              style={{
+                color: item === currentPage ? "#ffffff" : "var(--foreground)",
+                background: item === currentPage ? "var(--accent)" : "transparent",
+                border: `1px solid ${item === currentPage ? "var(--accent)" : "var(--border)"}`,
+              }}
+            >
+              {item}
+            </button>
+          )
+        )}
+
+        <button
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage >= totalPages}
+          className="px-3 py-1 text-xs font-mono rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          style={{ color: "var(--foreground)", border: "1px solid var(--border)" }}
+          onMouseEnter={(e) => { if (currentPage < totalPages) e.currentTarget.style.borderColor = "var(--border-strong)"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--border)"; }}
+        >
+          Next →
+        </button>
+      </div>
+    </div>
+  );
 }
 
 function AtsScorePair({ before, after }: { before: number | null; after: number | null }) {
@@ -116,7 +194,7 @@ function AppStatusDropdown({
   );
 }
 
-export function JobTable({ jobs, onViewSuggestions, onRetry, onStatusChange, onDelete, onCoverLetter }: JobTableProps) {
+export function JobTable({ jobs, currentPage, totalPages, onPageChange, onViewSuggestions, onRetry, onStatusChange, onDelete, onCoverLetter }: JobTableProps) {
   if (jobs.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-4 animate-fade-in">
@@ -275,6 +353,12 @@ export function JobTable({ jobs, onViewSuggestions, onRetry, onStatusChange, onD
           </div>
         </div>
       ))}
+
+      <PaginationControls
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={onPageChange}
+      />
     </div>
   );
 }

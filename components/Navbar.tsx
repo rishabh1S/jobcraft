@@ -2,16 +2,15 @@
 
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { Job } from "@/lib/types";
 import { UserMenu } from "@/components/UserMenu";
 
 interface NavbarProps {
-  jobs?: Job[];
+  processingCount?: number;
 }
 
-export function Navbar({ jobs = [] }: NavbarProps) {
+export function Navbar({ processingCount = 0 }: NavbarProps) {
   const { data: session } = useSession();
-  const activeCount = jobs.filter((j) => j.status === "processing").length;
+  const activeCount = processingCount;
   const user = session?.user;
 
   return (

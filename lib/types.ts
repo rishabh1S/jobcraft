@@ -66,3 +66,22 @@ export const APPLICATION_STATUS_CONFIG: Record<
   rejected:        { label: "Rejected",          color: "#f87171", bg: "#2a0505", dot: "#ef4444" },
   ghosted:         { label: "Ghosted",           color: "#6b7280", bg: "#111111", dot: "#4b5563" },
 };
+
+export interface PaginatedJobsResponse {
+  jobs: Job[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+export interface JobStats {
+  total: number;
+  readyToApply: number;
+  interviewing: number;
+  selected: number;
+  responded: number;
+  applied: number;
+  avgAtsBefore: number | null;
+  avgAtsAfter: number | null;
+  processing: number;
+}

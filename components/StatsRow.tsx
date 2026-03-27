@@ -1,34 +1,20 @@
 "use client";
 
-import { Job } from "@/lib/types";
+import { JobStats } from "@/lib/types";
 
 interface StatsRowProps {
-  jobs: Job[];
+  stats: JobStats | null;
 }
 
-export function StatsRow({ jobs }: StatsRowProps) {
-  const total        = jobs.length;
-  const readyToApply = jobs.filter((j) => j.applicationStatus === "ready_to_apply").length;
-  const interviewing = jobs.filter((j) => j.applicationStatus === "interviewing").length;
-  const selected     = jobs.filter((j) => j.applicationStatus === "selected").length;
-
-  const beforeScores = jobs.filter((j) => j.atsScore !== null).map((j) => j.atsScore!);
-  const afterScores  = jobs.filter((j) => j.atsScoreAfter !== null).map((j) => j.atsScoreAfter!);
-  const avgAtsBefore =
-    beforeScores.length > 0
-      ? Math.round(beforeScores.reduce((a, b) => a + b, 0) / beforeScores.length)
-      : null;
-  const avgAtsAfter =
-    afterScores.length > 0
-      ? Math.round(afterScores.reduce((a, b) => a + b, 0) / afterScores.length)
-      : null;
-
-  const responded = jobs.filter((j) =>
-    ["received_revert", "interviewing", "selected"].includes(j.applicationStatus)
-  ).length;
-  const applied = jobs.filter((j) =>
-    ["applied", "received_revert", "interviewing", "selected", "rejected", "ghosted"].includes(j.applicationStatus)
-  ).length;
+export function StatsRow({ stats }: StatsRowProps) {
+  const total        = stats?.total ?? 0;
+  const readyToApply = stats?.readyToApply ?? 0;
+  const interviewing = stats?.interviewing ?? 0;
+  const selected     = stats?.selected ?? 0;
+  const avgAtsBefore = stats?.avgAtsBefore ?? null;
+  const avgAtsAfter  = stats?.avgAtsAfter ?? null;
+  const responded    = stats?.responded ?? 0;
+  const applied      = stats?.applied ?? 0;
   const responseRate = applied > 0 ? Math.round((responded / applied) * 100) : null;
 
   const highlightColors: Record<string, string> = {
@@ -42,7 +28,7 @@ export function StatsRow({ jobs }: StatsRowProps) {
   const atsHighlight = (n: number | null) =>
     n === null ? null : n >= 80 ? "green" : n >= 60 ? "amber" : "red";
 
-  const stats = [
+  const statsItems = [
     { label: "Total",          value: total.toString(),         highlight: null as string | null },
     { label: "Ready to Apply", value: readyToApply.toString(),  highlight: readyToApply > 0 ? "cyan"   : null },
     { label: "Interviewing",   value: interviewing.toString(),  highlight: interviewing > 0 ? "purple" : null },
@@ -52,7 +38,7 @@ export function StatsRow({ jobs }: StatsRowProps) {
   return (
     <div className="mb-8 space-y-3">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {stats.map((stat) => (
+        {statsItems.map((stat) => (
           <div
             key={stat.label}
             className="p-4 rounded-lg"
