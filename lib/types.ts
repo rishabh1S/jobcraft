@@ -61,7 +61,7 @@ export const APPLICATION_STATUS_CONFIG: Record<
   ready_to_apply:  { label: "Ready to Apply",   color: "#22d3ee", bg: "#031a1f", dot: "#06b6d4" },
   applied:         { label: "Applied",           color: "#60a5fa", bg: "#0d1f3c", dot: "#3b82f6" },
   received_revert: { label: "Received Revert",   color: "#c084fc", bg: "#160d2e", dot: "#a855f7" },
-  interviewing:    { label: "Interviewing",      color: "#a78bfa", bg: "#140d2e", dot: "#8b5cf6" },
+  interviewing:    { label: "Interviewing",      color: "#fbbf24", bg: "#1c1500", dot: "#f59e0b" },
   selected:        { label: "Selected",          color: "#34d399", bg: "#032010", dot: "#10b981" },
   rejected:        { label: "Rejected",          color: "#f87171", bg: "#2a0505", dot: "#ef4444" },
   ghosted:         { label: "Ghosted",           color: "#6b7280", bg: "#111111", dot: "#4b5563" },

@@ -2,7 +2,6 @@
 
 import { Job, ApplicationStatus, APPLICATION_STATUS_CONFIG } from "@/lib/types";
 import {
-  Eye,
   RefreshCw,
   FileText,
   Loader2,
@@ -135,7 +134,6 @@ export function JobTable({ jobs, onViewSuggestions, onRetry, onStatusChange, onD
   }
 
   const handleJobLinkClick = (job: Job) => {
-    if (job.applicationStatus === "ready_to_apply") onStatusChange(job.id, "applied");
     window.open(job.jobLink!, "_blank", "noopener,noreferrer");
   };
 
@@ -219,33 +217,20 @@ export function JobTable({ jobs, onViewSuggestions, onRetry, onStatusChange, onD
             {job.status !== "done" ? (
               <ProcessingBadge status={job.status} />
             ) : (
-              <span className="flex items-center gap-1 text-xs font-mono" style={{ color: "var(--success)" }}>
-                <span
-                  className="w-1.5 h-1.5 rounded-full pulse-dot"
-                  style={{ backgroundColor: "var(--success)", boxShadow: "0 0 4px var(--success)" }}
-                />
-                done
-              </span>
+              <button
+                onClick={() => onViewSuggestions(job)}
+                className="flex items-center gap-1 text-xs font-mono transition-colors"
+                style={{ color: "#60a5fa" }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = "var(--foreground)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = "#60a5fa"; }}
+              >
+                View Analysis →
+              </button>
             )}
           </div>
 
           {/* Actions */}
           <div className="flex items-center justify-end gap-1">
-            <button
-              onClick={() => onViewSuggestions(job)}
-              disabled={job.status !== "done"}
-              title="View AI suggestions"
-              className="p-1.5 rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-              style={{ color: "var(--muted)" }}
-              onMouseEnter={(e) => {
-                if (job.status === "done")
-                  (e.currentTarget as HTMLButtonElement).style.color = "var(--foreground)";
-              }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--muted)"; }}
-            >
-              <Eye size={14} />
-            </button>
-
             <button
               onClick={() => onCoverLetter(job)}
               disabled={job.status !== "done"}

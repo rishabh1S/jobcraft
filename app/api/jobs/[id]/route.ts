@@ -55,8 +55,8 @@ export async function PATCH(
       where: { id },
       data: {
         applicationStatus,
-        // Record when first marked as applied
-        ...(applicationStatus === "applied" ? { appliedAt: new Date() } : {}),
+        // Record when first marked as applied — never overwrite once set
+        ...(applicationStatus === "applied" && !existing.appliedAt ? { appliedAt: new Date() } : {}),
       },
     });
     return NextResponse.json({ job });
