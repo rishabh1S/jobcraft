@@ -43,9 +43,18 @@ Include a bullet in phrasesToUpdate only if:
   b) The rewrite adds something genuinely new — do NOT rewrite a bullet just to append a skill/technology that is already explicitly named in that bullet. That is redundant and adds no value.
 Focus rewrites on: improving framing, adopting JD-specific terminology, surfacing implied experience more explicitly, or tightening language — not on keyword-stuffing skills already present.
 
-STEP 6 — Additions:
-easyAdditions (3–5): requirements the resume implies (scored 0.5) that could be made explicit with a small edit — name the exact resume section and which requirement it surfaces.
-riskAdditions (2–3): core requirements scored 0.0 that are genuine gaps — name the exact skill and be honest about the risk of adding it.
+STEP 6 — Skills section additions (Skills section ONLY — never Experience/Projects/Summary):
+Look at the JD skills that are absent from the resume's Skills section. Classify each into exactly one bucket:
+
+easyAdditions (max 3–4): A JD skill NOT in the resume's Skills section, but the resume already lists a closely related technology that makes this a natural, credible companion. The bridge must be concrete and specific:
+  - "has Spring Boot → Maven or Gradle" (standard build tools in that ecosystem)
+  - "has React → Redux or TypeScript" (common React companions)
+  - "has Java → JUnit" (standard Java testing framework)
+  Do NOT classify as easy just because the skill is common or simple. The resume must already show evidence of the ecosystem it belongs to.
+
+riskAdditions (max 2–3): A JD skill NOT in the resume AND no related foundation exists in the resume that bridges to it. These are genuine gaps — adding them without real experience is dishonest.
+
+MUTUAL EXCLUSION: Every skill must appear in exactly one list or neither. NEVER in both. If you find a skill in both lists, move it to riskAdditions and remove it from easyAdditions.
 
 STEP 7 — Projected score:
 atsScoreAfter = atsScore + (easyAdditions.length * 3) + (count of low-risk riskAdditions * 2)
@@ -57,8 +66,8 @@ Return this exact JSON:
   "atsScoreAfter": <integer>,
   "keywordsFound": ["string"],
   "keywordsMissing": ["string"],
-  "easyAdditions": ["string — exact section name + which JD requirement it surfaces"],
-  "riskAdditions": ["string — exact skill + honest gap note"],
+  "easyAdditions": ["skill name — why it's a natural extension of [existing resume skill]"],
+  "riskAdditions": ["skill name — what's genuinely missing and why it would be risky to claim"],
   "phrasesToUpdate": [
     {
       "section": "Experience | Projects | Summary (never Skills)",
@@ -72,7 +81,7 @@ Return this exact JSON:
 RULES:
 - phrasesToUpdate: cover ALL bullets that need updating. Include only bullets where the rewrite meaningfully improves JD alignment. original must be verbatim — copy it exactly.
 - NEVER add a skill or technology to the suggested rewrite if that exact skill/technology is already explicitly named in the original bullet. Check the original carefully before adding any term.
-- easyAdditions/riskAdditions: these cover Skills section additions — do not duplicate them in phrasesToUpdate.
+- easyAdditions/riskAdditions: Skills section only. A skill must appear in exactly one list or neither — never both. If unsure, put it in riskAdditions. Do not duplicate in phrasesToUpdate.
 - atsScore must follow the tier-weighted formula in STEP 3. Do not guess or estimate independently.
 - A resume that only implies security experience (but lacks the core domain) should score lower on core, not equal to one that demonstrates it directly.
 
